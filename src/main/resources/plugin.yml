@@ -1,0 +1,21 @@
+name: JobActions
+version: '${project.version}'
+main: dk.arasbuilds.jobactions.JobActions
+api-version: '1.20'
+softdepend: [Vault]
+
+commands:
+  jobmarket:
+    description: "Open JobMarket"
+    usage: "/jobmarket"
+    permission:
+  OrderCreate:
+    description: "Creates an Order"
+    usage: "/order create <item|hand> <amount> <price>"
+    permission: orderplugin.create
+    permission-message: "You don't have the permission to make an order"
+  getorder:
+    description: "Gets order/orders"
+    usage: "/getorder [all|user]"
+    permission: "JobActions.list"
+    permission-message: "you dont have permission to use this command"

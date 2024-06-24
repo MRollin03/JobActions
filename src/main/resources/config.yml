@@ -1,0 +1,7 @@
+#Configs of ordersystem
+Order:
+  order-fee: 10 # The fee the person who fulfills the order will be paying. This is mainly to prevent using orders as an infinite supply of items
+  order-fee-percentage: true #If this is set to true, the fee is a percentage of the initial price rather than a fixed amount of money
+  order-limit: 5 #The maximum amount of orders you can place at once
+  order-limit-stack-count: 5 #This is the maximum amount of items you can ask for per order. 320 = 5 stacks. This limits the amount in '/order create <item|hand> <amount> <price>`
+  order-timeout: 10080 #The timeout for an order in minutes. This example means 7 days.

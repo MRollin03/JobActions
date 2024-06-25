@@ -1,14 +1,14 @@
-# JobActions
+#JobActions
 
-JobActions is a Minecraft plugin that allows players to create, list, and fulfill orders for items using an in-game currency (MetaCoins). The plugin provides commands for creating orders, listing orders, receiving ordered items, and managing orders through a graphical user interface (GUI).
+JobActions is a Minecraft plugin that enables players to create, list, and fulfill orders for items using an in-game currency called MetaCoins. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
 
 ## Features
 
-- **Create Orders:** Players can create orders for specific items or items they are holding in their hand.
+- **Create Orders:** Players can create orders for specific items or for items they are currently holding in their hand.
 - **List Orders:** Players can list all orders, filter orders by user or item, and manage orders through a GUI.
 - **Receive Orders:** Players can receive their fulfilled orders through a GUI.
-- **Permissions:** Fine-grained permissions to control who can create, list, cancel, and receive orders.
-- **Configuration:** Customizable configuration options to set order limits, fees, and timeouts.
+- **Permissions:** Fine-grained permissions control who can create, list, cancel, and receive orders.
+- **Configuration:** Customizable options to set order limits, fees, and timeouts.
 
 ## Commands
 
@@ -49,35 +49,11 @@ Opens a GUI for receiving fulfilled orders.
 The `config.yml` file provides several options for customizing the plugin:
 
 ```yaml
-order-fee: 10 # The fee the person who fulfills the order will be paying. This is mainly to prevent using orders as an infinite supply of items.
-order-fee-percentage: true # If this is set to true, the fee is a percentage of the initial price rather than a fixed amount of money.
-order-limit: 5 # The maximum amount of orders you can place at once.
-order-limit-item-count: 320 # The maximum amount of items you can ask for per order. 320 = 5 stacks.
-order-timeout: 10080 # The timeout for an order in minutes. This example means 7 days.
+order-fee: 10 # The fee the person who fulfills the order will pay to prevent using orders as an infinite supply of items.
+order-fee-percentage: true # If true, the fee is a percentage of the initial price rather than a fixed amount of money.
+order-limit: 5 # The maximum amount of orders that can be placed at once.
+order-limit-item-count: 320 # The maximum amount of items per order. 320 = 5 stacks.
+order-timeout: 10080 # The timeout for an order in minutes (e.g., 7 days).
 
 Installation
-- 1 Download the latest release of the plugin.
-- 2 Place the JobActions.jar file in your server's plugins directory.
-- 3 Start your server to generate the default configuration files.
-- 4 Customize the config.yml file as needed.
-- 5 Restart your server to apply the configuration changes.
-
-###Development
-`Prerequisites`
-- Maven
-- Java Development Kit 21 (JDK)
-
-###Contributing
-Contributions are welcome! Please open an issue or submit a pull request.
-
-`License`
-This project is licensed under the MIT License.
-
-###Acknowledgements
-Special thanks to the Spigot and Bukkit communities for their excellent documentation and support.
-
-###Contact
-For any questions or support, please open an issue on the GitHub repository.
-
-Happy crafting!
-
+- Download the latest release of the plugin.

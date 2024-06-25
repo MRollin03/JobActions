@@ -1,4 +1,4 @@
-#JobActions
+# JobActions
 
 JobActions is a Minecraft plugin that enables players to create, list, and fulfill orders for items using an in-game currency called MetaCoins. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
 

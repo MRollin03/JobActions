@@ -29,7 +29,7 @@ Creates an order for a specified item or the item in hand.
 
 Lists orders, optionally filtered by user or item. Opens a GUI for managing orders.
 
-- **user:** Filter by username (e.g., `/order list Folas1337`).
+- **user:** Filter by username (e.g., `/order list ArasBuilds`).
 - **item:** Filter by item name (e.g., `/order list diamond`).
 
 ### `/order received`

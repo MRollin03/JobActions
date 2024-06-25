@@ -39,7 +39,7 @@ Opens a GUI for receiving fulfilled orders.
 ## Permissions
 
 - `JobActions.create` - Permission to create orders.
-- `JobActions.list` - Permission to list orders.
+- `JobActions.listJobActions.listJobActions.list` - Permission to list orders.
 - `JobActions.cancel.self` - Permission to cancel own orders.
 - `JobActions.cancel.others` - Permission to cancel others' orders.
 - `JobActions.received` - Permission to receive orders.

@@ -1,5 +1,6 @@
 package dk.arasbuilds.jobactions.PluginItems;
 import dk.arasbuilds.jobactions.JobActions;
+import dk.arasbuilds.jobactions.Utils.OrderIDGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,7 +13,7 @@ public class ItemOrder {
     private Material material;
     private int amount;
     private int price;
-    private int orderID = 0;
+    private String orderID = null;
 
 
     public ItemOrder(Player player, Material material, int amount, int price){
@@ -21,6 +22,9 @@ public class ItemOrder {
         if (material.getMaxStackSize() * JobActions.getInstance().getOrderLimit() < amount){
             player.sendMessage("The maximum stack size is " + material.getMaxStackSize() + ".");
         }
+
+        //Giving order an Uniqe order ID:
+        this.orderID = OrderIDGenerator.generateOrderID();
 
         //Setting Order Details
         this.uuid = player.getUniqueId();
@@ -50,8 +54,7 @@ public class ItemOrder {
 
     public int getPrice() { return price; }
 
-    public int getOrderID() { return orderID; }
-    public void setOrderID(int orderID) { this.orderID = orderID; }
+    public String getOrderID() { return orderID; }
 
     @Override
     public String toString() {

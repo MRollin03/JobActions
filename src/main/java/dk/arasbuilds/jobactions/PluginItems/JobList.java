@@ -34,12 +34,6 @@ public class JobList {
      * @param player the player that created the order.
      */
     public Boolean add(ItemOrder order, Player player) {
-        // Get random int for ID that does not match with other IDs
-        int randID = (int)(Math.random() * orderList.size());
-        while (jobIDs.contains(randID)) {
-            randID = (int)(Math.random() * orderList.size());
-        }
-        jobIDs.add(randID);
 
         // If player matches with a Player in PlayerOrders, add to their orders
         for (PlayerOrders o : orderList) {

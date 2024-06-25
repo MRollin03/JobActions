@@ -22,6 +22,8 @@ public class OrderCreate implements CommandExecutor {
 
         System.out.print(1);
 
+
+        //Get item from hand or requested
         Material material = null;
         if(args[0].equalsIgnoreCase("hand")){
             System.out.println("HAND!");
@@ -32,7 +34,7 @@ public class OrderCreate implements CommandExecutor {
         }
         else{
             try {
-                material = Material.valueOf(args[0].toLowerCase());
+                material = Material.valueOf(args[0].toUpperCase());
                 System.out.println("item " + 3);
             } catch (IllegalArgumentException e) {
                 player.sendMessage("Invalid material");
@@ -40,18 +42,18 @@ public class OrderCreate implements CommandExecutor {
             }
         }
 
+        //Check if item request is above OrderLimitStacks
         if(material.getMaxStackSize() * JobActions.getInstance().getOrderLimitStackCount() < Integer.parseInt(args[1])){
             player.sendMessage("Combined order limit exceeded (max stack size is " + args[1] + ")");
-
             System.out.println(5);
             return false;
         }
 
-        System.out.println(6);
+        //Create ItemOrder
         ItemOrder order = new ItemOrder(player, material, Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+
         System.out.println(7);
         return JobActions.getInstance().getJobList().add(order, player);
-
 
     }
 

@@ -15,9 +15,9 @@ public class PlayerOrders {
         this.orders = new ArrayList<>();
     }
 
-    public ItemOrder getOrderById(int id) {
+    public ItemOrder getOrderById(String id) {
         for (ItemOrder order : orders) {
-            if(order.getOrderID() == id){
+            if(order.getOrderID().equals(id)){
                 return order;
             }
         }
@@ -34,8 +34,6 @@ public class PlayerOrders {
             return false;
         }
     }
-
-
 
     public ArrayList<ItemOrder> getOrders() {
         return orders;

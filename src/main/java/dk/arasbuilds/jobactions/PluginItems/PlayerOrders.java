@@ -39,6 +39,20 @@ public class PlayerOrders {
         return orders;
     }
 
+    @Override
+    public String toString() {
+        return "PlayerOrders{" +
+                "player=" + player +
+                ", orders=" + orders +
+                '}';
+    }
+
+    public void displayOrders() {
+        for (ItemOrder order : orders) {
+            player.sendMessage(order.toString());
+        }
+    }
+
     public Player getPlayer() {
         return player;
     }

@@ -22,7 +22,7 @@ public class GetOrder implements CommandExecutor {
         if(args[0].equalsIgnoreCase("all")){
             ArrayList<PlayerOrders> orders = JobActions.getInstance().getJobList().getOrderList();
             for(PlayerOrders order : orders){
-                player.sendMessage(order.getOrders().toString());
+                order.displayOrders();
             }
             return true;
 

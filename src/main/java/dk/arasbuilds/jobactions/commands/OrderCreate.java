@@ -26,27 +26,21 @@ public class OrderCreate implements CommandExecutor {
         //Get item from hand or requested
         Material material = null;
         if(args[0].equalsIgnoreCase("hand")){
-            System.out.println("HAND!");
-            System.out.println(2);
             material = player.getInventory().getItemInMainHand().getType();
-            System.out.println(material);
-            System.out.println("hand " + 3);
         }
         else{
             try {
                 material = Material.valueOf(args[0].toUpperCase());
-                System.out.println("item " + 3);
             } catch (IllegalArgumentException e) {
                 player.sendMessage("Invalid material");
-                return false;
+                return true;
             }
         }
 
         //Check if item request is above OrderLimitStacks
         if(material.getMaxStackSize() * JobActions.getInstance().getOrderLimitStackCount() < Integer.parseInt(args[1])){
             player.sendMessage("Combined order limit exceeded (max stack size is " + args[1] + ")");
-            System.out.println(5);
-            return false;
+            return true;
         }
 
         //Create ItemOrder

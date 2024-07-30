@@ -2,15 +2,18 @@ package dk.arasbuilds.jobactions.PluginItems;
 
 import dk.arasbuilds.jobactions.JobActions;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class PlayerOrders {
+public class PlayerOrders implements Serializable {
     private Player player;
     private ArrayList<ItemOrder> orders;
+    private ArrayList<ItemStack> ItemsVault;
 
-    PlayerOrders(Player player) {
+    public PlayerOrders(Player player) {
         this.player = player;
         this.orders = new ArrayList<>();
     }
@@ -35,6 +38,10 @@ public class PlayerOrders {
         }
     }
 
+    public void removeOrder(ItemOrder order) {
+        orders.remove(order);
+    }
+
     public ArrayList<ItemOrder> getOrders() {
         return orders;
     }
@@ -47,11 +54,17 @@ public class PlayerOrders {
                 '}';
     }
 
+    public void clearOrders() {
+        orders.clear();
+    }
+
     public void displayOrders() {
         for (ItemOrder order : orders) {
             player.sendMessage(order.toString());
         }
     }
+
+    public ArrayList<ItemOrder> getItemOrders() {return orders;}
 
     public Player getPlayer() {
         return player;

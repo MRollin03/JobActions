@@ -49,8 +49,9 @@ Opens a GUI for receiving fulfilled orders.
 The `config.yml` file provides several options for customizing the plugin:
 
 ```yaml
-order-fee: 10 # The fee the person who fulfills the order will pay to prevent using orders as an infinite supply of items.
-order-fee-percentage: true # If true, the fee is a percentage of the initial price rather than a fixed amount of money.
+order-basefee: 10 # The fee the person creates a new order. This is mainly to prevent using orders as a item teleportation system.
+order-fee-percentage: # The extra fee in percentage, that is added on top of  the base fee
+order-fee-percentage-activated: true # If true, the fee is a percentage of the initial price rather than a fixed amount of money.
 order-limit: 5 # The maximum amount of orders that can be placed at once.
 order-limit-item-count: 320 # The maximum amount of items per order. 320 = 5 stacks.
 order-timeout: 10080 # The timeout for an order in minutes (e.g., 7 days).

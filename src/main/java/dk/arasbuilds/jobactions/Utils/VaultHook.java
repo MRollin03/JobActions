@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.security.Permissions;
 
 
 public class VaultHook {
@@ -50,18 +51,43 @@ public class VaultHook {
         return econ != null;
     }
 
-    private static String deposit(OfflinePlayer target, int amount){
+    private static boolean hasPermissions(){
+        return perms != null;
+    }
+
+    public static String deposit(OfflinePlayer target, int amount){
         if(!hasEconomy()){
             throw new UnsupportedOperationException("The Vault Economy wasn't found!");
         }
         return econ.depositPlayer(target , amount).errorMessage;
     }
 
-    private static String withdraw(OfflinePlayer target, int amount){
+    public static String withdraw(OfflinePlayer target, int amount){
         if(!hasEconomy()){
-            throw new UnsupportedOperationException("The Vault Economy wasn't faound!");
+            throw new UnsupportedOperationException("The Vault Economy wasn't found!");
         }
         return econ.withdrawPlayer(target, amount).errorMessage;
+    }
+
+    public static double getBalance(OfflinePlayer target){
+        if(!hasEconomy()){
+            throw new UnsupportedOperationException("The Vault Economy wasn't found!");
+        }
+        return econ.depositPlayer(target, 0).balance;
+    }
+
+    public static String[] getPerms(OfflinePlayer target){
+        if(!(hasPermissions())){
+            throw new UnsupportedOperationException("The Vault Permissions wasn't found!");
+        }
+        return perms.getPlayerGroups(target.getPlayer());
+    }
+
+    public static String getEconomyCurrency(){
+        if(!hasEconomy()){
+            throw new UnsupportedOperationException("The Vault Economy wasn't found!");
+        }
+        return econ.currencyNamePlural();
     }
 
     static{

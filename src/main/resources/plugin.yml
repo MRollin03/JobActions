@@ -19,3 +19,12 @@ commands:
     usage: "/getorder [all|user]"
     permission: "JobActions.list"
     permission-message: "you dont have permission to use this command"
+  cancelOrders:
+    description: "Cancel Order"
+    usage: "/cancel [all|order] [ID]"
+  order:
+    description: "General Order"
+    usage: "/order [create/list/market/remove] [ID/Player/Nr]"
+  market:
+    description: "Opens Market"
+    usage: "/market"

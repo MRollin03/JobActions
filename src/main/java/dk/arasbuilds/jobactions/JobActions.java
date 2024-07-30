@@ -1,9 +1,13 @@
 package dk.arasbuilds.jobactions;
 
-import dk.arasbuilds.jobactions.PluginItems.JobList;
 import dk.arasbuilds.jobactions.PluginItems.PlayerOrders;
-import dk.arasbuilds.jobactions.commands.GetOrder;
+import dk.arasbuilds.jobactions.commands.MarketCommand;
 import dk.arasbuilds.jobactions.commands.OrderCreate;
+import dk.arasbuilds.jobactions.database.JobActionsDatabase;
+import dk.arasbuilds.jobactions.events.gui.CompletedOrderVaultGUI;
+import dk.arasbuilds.jobactions.events.listeners.MarketGUIListener;
+import dk.arasbuilds.jobactions.events.listeners.OrderGUIListener;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,27 +16,44 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.sql.SQLException;
 
 public class JobActions extends JavaPlugin implements Listener {
     private static JobActions instance;
     private FileConfiguration config;
-    private JobList jobList;
     private PlayerOrders playerOrders;
+    private JobActionsDatabase jobActionsDatabase;
+
 
     @Override
     public void onEnable() {
         instance = this;
 
+        //initialize SQLLite database
+        try{
+            if(getDataFolder().exists()){
+                getDataFolder().mkdirs();
+            }
+            jobActionsDatabase = new JobActionsDatabase(getDataFolder().getAbsolutePath() + "/jobactions.db");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to load JobActions's database!" + e.getMessage());
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+
         getCommand("ordercreate").setExecutor(new OrderCreate());
-        getCommand("getorder").setExecutor(new GetOrder());
+        getCommand("market").setExecutor(new MarketCommand());
+
+        getServer().getPluginManager().registerEvents(new MarketGUIListener(), this);
+        getServer().getPluginManager().registerEvents(new OrderGUIListener(), this);
+        Bukkit.getPluginManager().registerEvents(new CompletedOrderVaultGUI(), this);
+
 
         File dataFolder = getDataFolder();
         if (!dataFolder.exists()) {
             dataFolder.mkdirs(); // Create directories if they don't exist
         }
         File dataFile = new File(dataFolder, "orders.dat");
-        this.jobList = new JobList(dataFile);
-        jobList.loadJobList();
 
         // Save the default config file if it doesn't exist
         saveDefaultConfig();
@@ -58,8 +79,13 @@ public class JobActions extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        jobList.save();
         instance = null; // Avoid potential memory leak
+        try{
+            jobActionsDatabase.closeConnection();
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
     public static JobActions getInstance() {
@@ -70,12 +96,15 @@ public class JobActions extends JavaPlugin implements Listener {
         return config;
     }
 
-    public int getOrderFee() {
-        return config.getInt("Order.order-fee");
+    public int getOrderBaseFee() {
+        return config.getInt("Order.order-basefee");
+    }
+    public double getOrderFeePercentage() {
+        return config.getDouble("Order.order-fee-percentage");
     }
 
     public boolean isOrderFeePercentage() {
-        return config.getBoolean("Order.order-fee-percentage");
+        return config.getBoolean("Order.order-fee-percentage-activated");
     }
 
     public int getOrderLimit() {
@@ -90,8 +119,8 @@ public class JobActions extends JavaPlugin implements Listener {
         return config.getInt("Order.order-timeout");
     }
 
-    public JobList getJobList() {
-        return jobList;
+    public JobActionsDatabase getJobActionsDatabase() {
+        return jobActionsDatabase;
     }
 
     @EventHandler

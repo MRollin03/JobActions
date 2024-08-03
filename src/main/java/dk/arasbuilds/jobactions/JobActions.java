@@ -5,6 +5,7 @@ import dk.arasbuilds.jobactions.commands.MarketCommand;
 import dk.arasbuilds.jobactions.commands.OrderCreate;
 import dk.arasbuilds.jobactions.database.JobActionsDatabase;
 import dk.arasbuilds.jobactions.events.gui.CompletedOrderVaultGUI;
+import dk.arasbuilds.jobactions.events.listeners.CompletedOrderVaultGUIListener;
 import dk.arasbuilds.jobactions.events.listeners.MarketGUIListener;
 import dk.arasbuilds.jobactions.events.listeners.OrderGUIListener;
 import org.bukkit.Bukkit;
@@ -46,7 +47,8 @@ public class JobActions extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(new MarketGUIListener(), this);
         getServer().getPluginManager().registerEvents(new OrderGUIListener(), this);
-        Bukkit.getPluginManager().registerEvents(new CompletedOrderVaultGUI(), this);
+        getServer().getPluginManager().registerEvents(new CompletedOrderVaultGUI(), this);
+        getServer().getPluginManager().registerEvents(new CompletedOrderVaultGUIListener(), this);
 
 
         File dataFolder = getDataFolder();

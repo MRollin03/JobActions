@@ -3,49 +3,71 @@ package dk.arasbuilds.jobactions.events.listeners;
 import dk.arasbuilds.jobactions.JobActions;
 import dk.arasbuilds.jobactions.database.JobActionsDatabase;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CompletedOrderVaultGUIListener implements Listener {
 
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if(event.isRightClick()) {
-            event.setCancelled(true);
-            return;
-        }
+    @EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
+        public void onInventoryClick(InventoryClickEvent event) {
 
+        if(event.getView().getTitle().equals(ChatColor.RED + "Completed Orders Vault")
+        ){
 
-        if (event.getView().getTitle().equals(ChatColor.RED + "Job Market")) {
             Player player = (Player) event.getWhoClicked();
 
-            //TODO FIX THE VAULT
 
-            switch (event.getSlot()) {
-                case 9 * 4 - 6:
-                    // Implement or call the previous page logic here
-                    player.sendMessage(ChatColor.YELLOW + "Previous page functionality not yet implemented.");
-                    event.setCancelled(true); // Cancel event by default
-                    break;
+            Inventory clickedInventory = event.getClickedInventory();
+            InventoryView view = event.getView();
+            Inventory topInventory = view.getTopInventory();
 
-                case 9 * 4 - 5:
-                    player.closeInventory();
-                    break;
+            // Check if the top inventory is a chest and clicked inventory is not null
+            if (topInventory != null && topInventory.getType() == InventoryType.CHEST && clickedInventory != null) {
+                // Check if the click is in the player's inventory
+                if (clickedInventory instanceof PlayerInventory) {
+                    // Prevent moving items from the player's inventory to the chest
+                    event.setCancelled(true);
+                }
+                // Check if the click is in the chest
+                else if (clickedInventory.getType() == InventoryType.CHEST) {
+                    // Allow taking items from the chest (do nothing)
+                }
 
-                case 9 * 4 - 4:
-                    // Implement or call the next page logic here
-                    player.sendMessage(ChatColor.YELLOW + "Next page functionality not yet implemented.");
-                    event.setCancelled(true); // Cancel event by default
-                    break;
+                switch (event.getSlot()) {
+                    case 9 * 4 - 6:
+                        // Implement or call the previous page logic here
+                        player.sendMessage(ChatColor.YELLOW + "Previous page functionality not yet implemented.");
+                        event.setCancelled(true); // Cancel event by default
+                        break;
+
+                    case 9 * 4 - 5:
+                        player.closeInventory();
+                        break;
+
+                    case 9 * 4 - 4:
+                        // Implement or call the next page logic here
+                        player.sendMessage(ChatColor.YELLOW + "Next page functionality not yet implemented.");
+                        event.setCancelled(true); // Cancel event by default
+                        break;
+
+                }
+
 
             }
         }
+
     }
 }
+

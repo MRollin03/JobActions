@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,7 +28,7 @@ public class CompletedOrderVaultGUI implements Listener {
 
     public static void DisplayGUI(Player player) {
         // Create the inventory for the player
-        Inventory inv = Bukkit.createInventory(player, INVENTORY_SIZE, GUI_TITLE);
+        Inventory inv = Bukkit.createInventory( player, INVENTORY_SIZE, GUI_TITLE);
 
         // Load the player's items and initialize the queue
         List<ItemStack> itemList = JobActions.getInstance().getJobActionsDatabase().loadPlayerItems(player.getUniqueId());

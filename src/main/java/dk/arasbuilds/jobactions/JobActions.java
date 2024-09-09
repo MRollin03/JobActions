@@ -76,13 +76,17 @@ public class JobActions extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         instance = null; // Avoid potential memory leak
-        try{
-            jobActionsDatabase.closeConnection();
-        }
-        catch(SQLException e){
-            e.printStackTrace();
+
+        // Check if the database is not null before closing the connection
+        if (jobActionsDatabase != null) {
+            try {
+                jobActionsDatabase.closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 
     public static JobActions getInstance() {
         return instance;
@@ -100,11 +104,13 @@ public class JobActions extends JavaPlugin implements Listener {
         return config.getDouble("Order.order-fee-percentage");
     }
 
-    public int isOrderFeePercentageActivated(){
-        return config.getInt("Order.order-fee-percentage-activated");
+    public boolean isOrderBaseFeeActivated() {
+        return config.getBoolean("Order.order-base-fee-activated");
     }
 
-
+    public boolean isOrderFeePercentageActivated(){
+        return config.getBoolean("Order.order-fee-percentage-activated");
+    }
 
     public int getOrderLimit() {
         return config.getInt("Order.order-limit");

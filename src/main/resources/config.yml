@@ -3,6 +3,7 @@ Order:
   order-basefee: 10 # The fee the person creates a new order. This is mainly to prevent using orders as a teleportation system.
   order-fee-percentage: 10 # The extra fee in percentage, that is added on top of  the base fee
   order-fee-percentage-activated: true #If this is set to true, the fee is a percentage of the initial price rather than a fixed amount of money
+  order-base-fee-activated: true #If this is set to true, the base-fee is added to the payment amount.
   order-limit: 5 #The maximum amount of orders you can place at once
   order-limit-stack-count: 5 #This is the maximum amount of items you can ask for per order. 320 = 5 stacks. This limits the amount in '/order create <item|hand> <amount> <price>`
   order-timeout: 10080 #The timeout for an order in minutes. This example means 7 days.

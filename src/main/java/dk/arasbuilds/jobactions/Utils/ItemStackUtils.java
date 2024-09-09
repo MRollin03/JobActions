@@ -48,6 +48,7 @@ public class ItemStackUtils {
         } else {
             throw new IllegalStateException("Expected a JSON object");
         }
+        return gson.fromJson(jsonString, ItemStack.class);
     }
 
 

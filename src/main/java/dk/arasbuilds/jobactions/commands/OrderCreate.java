@@ -25,8 +25,11 @@ public class OrderCreate implements CommandExecutor {
 
         if (args.length != 3) {return false;}
 
+        int quantity = Integer.parseInt(args[1]);
+        int price = Integer.parseInt(args[2]);
+
         //Price and order amount can't be zero or negative
-        if (Integer.parseInt(args[2]) < JobActions.getInstance().getOrderBaseFee() || Integer.parseInt(args[1]) < 1){
+        if (Integer.parseInt(args[2]) < JobActions.getInstance().getOrderBaseFee() || price < 1){
             commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the basefee = " + JobActions.getInstance().getOrderBaseFee());
             return true;
         }
@@ -46,13 +49,13 @@ public class OrderCreate implements CommandExecutor {
         }
 
         //Check if item request is above OrderLimitStacks
-        if(material.getMaxStackSize() * JobActions.getInstance().getOrderLimitStackCount() < Integer.parseInt(args[1])){
+        if(material.getMaxStackSize() * JobActions.getInstance().getOrderLimitStackCount() < quantity){
             player.sendMessage("Combined order limit exceeded (max stack size is " + JobActions.getInstance().getOrderLimitStackCount() + ")");
             return true;
         }
 
         //Create ItemOrder
-        ItemOrder order = new ItemOrder(player, material, Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        ItemOrder order = new ItemOrder(player, material, quantity, price);
         if(order.getOrderID() == null){
             player.sendMessage("Insufficient funds!");
             return true;

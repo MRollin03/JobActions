@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,14 +22,31 @@ public class JobActionsDatabase {
         this.connection = DriverManager.getConnection("jdbc:sqlite:" + path);
         try (Statement statement = connection.createStatement()) {
             statement.execute("""
+            CREATE TABLE IF NOT EXISTS players(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                player_name TEXT,
+                player_uuid TEXT UNIQUE
+            )
+            """);
+            statement.execute("""
                 CREATE TABLE IF NOT EXISTS player_items (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     player_uuid VARCHAR(36),
                     item_stack TEXT,
-                    stack_size INT
+                    stack_size INTEGER
                 )
-             """);
-            // Create item_orders table
+            """);
+
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS vaultstack (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    player_uuid VARCHAR(36),
+                    material TEXT,
+                    amount INTEGER,
+                    itemstack_lore TEXT
+                )
+            """);
+
             statement.execute("""
                 CREATE TABLE IF NOT EXISTS item_orders (
                     order_id TEXT PRIMARY KEY,
@@ -36,7 +54,7 @@ public class JobActionsDatabase {
                     material TEXT NOT NULL,
                     amount INTEGER NOT NULL,
                     price INTEGER NOT NULL,
-                    FOREIGN KEY(player_uuid) REFERENCES players(uuid)
+                    FOREIGN KEY(player_uuid) REFERENCES players(player_uuid)
                 )
             """);
         }
@@ -47,6 +65,9 @@ public class JobActionsDatabase {
             connection.close();
         }
     }
+
+
+    //< ORDER RELATED METHODS
 
     public void addPlayer(Player player) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
@@ -96,6 +117,7 @@ public class JobActionsDatabase {
             e.printStackTrace();
         }
     }
+
 
     private boolean orderExists(String orderID) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
@@ -222,56 +244,79 @@ public class JobActionsDatabase {
         return orders;
     }
 
-    public void savePlayerItems(UUID playerUUID, List<ItemStack> itemStacks) {
-        try {
-            // Clear the existing items for the player first
-            try (PreparedStatement deleteStatement = connection.prepareStatement(
-                    "DELETE FROM player_items WHERE player_uuid = ?"
-            )) {
-                deleteStatement.setString(1, playerUUID.toString());
-                deleteStatement.executeUpdate();
+
+
+    // PLAYER VAULT METHODS
+    public void addStacksToVault(UUID playerUUID, List<ItemStack> itemStacks) {
+        String insertQuery = "INSERT INTO vaultstack (player_uuid, material, amount, itemstack_lore) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+            for (ItemStack itemStack : itemStacks) {
+                preparedStatement.setString(1, playerUUID.toString());
+                preparedStatement.setString(2, itemStack.getType().name());
+                preparedStatement.setInt(3, itemStack.getAmount());
+                preparedStatement.setString(4, itemStack.getItemMeta().getLore() != null ? String.join(",", itemStack.getItemMeta().getLore()) : "");
+
+                preparedStatement.addBatch(); // Add to batch
             }
 
+            preparedStatement.executeBatch(); // Execute all at once
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle exception appropriately
+        }
+    }
+
+
+    public void addStackToVault(UUID playerUUID, ItemStack itemStack){
+        try {
             // Insert each ItemStack into the database as a new row
             try (PreparedStatement insertStatement = connection.prepareStatement(
-                    "INSERT INTO player_items (player_uuid, item_stack) VALUES (?, ?)"
+                    "INSERT INTO vaultstack (player_uuid, material, amount, itemstack_Meta,) VALUES (?, ?, ?, ?)"
             )) {
-                for (ItemStack itemStack : itemStacks) {
-                    String itemStackJson = ItemStackUtils.serializeItemStack(itemStack);
-                    insertStatement.setString(1, playerUUID.toString());
-                    insertStatement.setString(2, itemStackJson);
-                    insertStatement.executeUpdate();
-                }
+                String itemStackJson = ItemStackUtils.serializeItemStack(itemStack);
+                insertStatement.setString(1, playerUUID.toString());
+                insertStatement.setString(2, itemStack.getType().toString());
+                insertStatement.setInt(3, itemStack.getAmount());
+                insertStatement.setString(4, itemStackJson);
+                insertStatement.executeUpdate();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public List<ItemStack> loadPlayerItems(UUID playerUUID) {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT item_stack FROM player_items WHERE player_uuid = ?"
-        )) {
-            preparedStatement.setString(1, playerUUID.toString());
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                String itemStackJson = resultSet.getString("item_stack");
-                System.out.println(itemStackJson);
-                ItemStack itemStack = ItemStackUtils.deserializeItemStack(itemStackJson);
-                if(itemStack == null){
-                    continue;
-                }
-                itemStacks.add(itemStack);
-            }
+    public void clearPlayerVault(UUID playerUUID) {
+        try(PreparedStatement deleteStatement = connection.prepareStatement(
+                "DELETE from vaultstack WHERE  player_uuid = ?"
+        )){
+            deleteStatement.setString(1, playerUUID.toString());
+            deleteStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    //TODO add item-meta infomation handling
+    public List<ItemStack> getPlayerVault(UUID playerUUID) {
+        List<ItemStack> itemStacks = new ArrayList<>();
+        try (PreparedStatement getStatement  = connection.prepareStatement(
+                "SELECT * from vaultstack WHERE player_uuid =?"
+        )){
+            getStatement.setString(1, playerUUID.toString());
+            ResultSet resultSet = getStatement.executeQuery();
+
+            while(resultSet.next()) {
+                Material material = Material.valueOf(resultSet.getString("material"));
+                int amount = resultSet.getInt("amount");
+                new ItemStack(material, amount);
+
+                itemStacks.add(new ItemStack(material, amount));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return itemStacks;
     }
-
-
-
 
 }

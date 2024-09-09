@@ -35,16 +35,18 @@ public class JobVerification {
             //Give player Money
             VaultHook.deposit(player, order.getPrice());
 
+            //get database
             JobActions jobactions = JobActions.getInstance();
             jobactions.getJobActionsDatabase().removeItemOrder(order);
 
+            List<ItemStack> removedItems = InventoryManipulator.removeItemsFromInventory(player, order.getMaterial(), order.getAmount());
+            List<ItemStack> vaultItems = jobactions.getJobActionsDatabase().getPlayerVault(order.getUuid());
 
-           List<ItemStack> removedItems = InventoryManipulator.removeItemsFromInventory(player, order.getMaterial(), order.getAmount());
-           List<ItemStack> vaultItems =  jobactions.getJobActionsDatabase().loadPlayerItems(order.getUuid());
-           assert removedItems != null;
-           vaultItems.addAll(removedItems);
+            assert removedItems != null;
+            vaultItems.addAll(removedItems);
 
-           jobactions.getJobActionsDatabase().savePlayerItems(order.getUuid(), vaultItems);
+            jobactions.getJobActionsDatabase().clearPlayerVault(order.getUuid());
+            jobactions.getJobActionsDatabase().addStacksToVault(order.getUuid(), vaultItems);
 
             player.sendMessage(ChatColor.GREEN + "Order finished, you received " + order.getPrice() + " " + VaultHook.getEconomyCurrency());
        }

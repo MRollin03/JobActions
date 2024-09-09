@@ -42,7 +42,7 @@ public class ItemOrder implements Serializable {
             }
             return;
         }
-
+            VaultHook.withdraw(player, price);
             //Giving order a Unique order ID:
             this.orderID = OrderIDGenerator.generateOrderID();
 
@@ -50,17 +50,32 @@ public class ItemOrder implements Serializable {
             this.uuid = player.getUniqueId();
             this.material = material;
             this.amount = amount;
+            this.price = calculatePrice(price);
 
-            // Calculate the total price:
-            // Apply the order fee percentage and base fee to the base price
-            double feePercentage = JobActions.getInstance().getOrderFeePercentage() / 100.0;
-            int baseFee = JobActions.getInstance().getOrderBaseFee();
-            this.price = (int) ((price * (1 - feePercentage)) - baseFee);
 
-            VaultHook.withdraw(player, price);
             JobActions jobActions = JobActions.getInstance();
             jobActions.getJobActionsDatabase().addOrder(this);
     }
+
+    private int calculatePrice(int price){
+        // Calculate the total price:
+        // Apply the order fee percentage and base fee to the base price
+        double fee = 0;
+
+        if(JobActions.getInstance().isOrderFeePercentageActivated())
+        {
+            fee =+ price * (1 - JobActions.getInstance().getOrderFeePercentage() / 100.0);
+        }
+        if(JobActions.getInstance().isOrderBaseFeeActivated())
+        {
+            fee =+ JobActions.getInstance().getOrderBaseFee();
+        }
+        System.out.println("fee is: " + fee);
+        fee = price - fee;
+        System.out.println("Quote is:" + fee);
+        return (int) fee;
+    }
+
 
 
     //For Editing price on order

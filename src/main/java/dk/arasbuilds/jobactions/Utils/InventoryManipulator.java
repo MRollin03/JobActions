@@ -27,39 +27,47 @@ public class InventoryManipulator {
     public static List<ItemStack> removeItemsFromInventory(Player player, Material item, int amount) {
         Inventory inventory = player.getInventory();
 
-        //Stacks removed
-        List<ItemStack> items = new ArrayList<ItemStack>();
+        // Stacks removed
+        List<ItemStack> items = new ArrayList<>();
 
+        // Check if the player has enough items
         if (!InventoryChecker.hasItems(player, item, amount)) {
-            player.sendMessage("You don't have the required amount of " + amount + " items");
+            player.sendMessage("You don't have the required amount of " + amount + " items.");
             return null;
         }
 
-        int counter = 0;
+        int counter = 0; // Track the number of items removed
 
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack currentItem = inventory.getItem(i);
 
+            // Skip if the current item is null or is not the material we want
             if (currentItem == null || currentItem.getType() != item) {
                 continue;
             }
 
-            int slotAmount = currentItem.getAmount();
+            int slotAmount = currentItem.getAmount(); // Get the amount in the current slot
 
+            // If this stack contains more than the remaining amount needed
             if (counter + slotAmount > amount) {
-                currentItem.setAmount(slotAmount - (amount - counter));
-                items.add(new ItemStack(item, (amount - counter)));
-                break;
+                int toRemove = amount - counter; // Calculate the remaining items to remove
+                currentItem.setAmount(slotAmount - toRemove); // Decrease the stack size
+                items.add(new ItemStack(item, toRemove)); // Add the exact amount removed
+                break; // Stop once we've removed enough items
             } else {
-                counter += slotAmount;
-                inventory.setItem(i, null);
-                items.add(new ItemStack(item, item.getMaxStackSize()));
+                // Add the full stack to the removed items
+                items.add(new ItemStack(item, slotAmount));
+                counter += slotAmount; // Update the counter with the number of items removed
+                inventory.setItem(i, null); // Clear the slot
             }
 
+            // Stop if we've removed enough items
             if (counter >= amount) {
                 break;
             }
         }
+
         return items;
     }
+
 }

@@ -30,7 +30,10 @@ public class JobVerification {
             return;
         }
 
-       if( InventoryChecker.hasItems(player, order.getMaterial(), order.getAmount())){
+        //Check if player has required items
+        if(!InventoryChecker.hasItems(player, order.getMaterial(), order.getAmount())){
+            return;
+        }
 
             //Give player Money
             VaultHook.deposit(player, order.getPrice());
@@ -49,7 +52,7 @@ public class JobVerification {
             jobactions.getJobActionsDatabase().addStacksToVault(order.getUuid(), vaultItems);
 
             player.sendMessage(ChatColor.GREEN + "Order finished, you received " + order.getPrice() + " " + VaultHook.getEconomyCurrency());
-       }
+
 
     }
 

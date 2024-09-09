@@ -1,12 +1,14 @@
 # JobActions 
 
-![NOTE] WIP
+> [!NOTE]
+> This Project is WIP and is currently not operatable
+> and are still in development.
 
-JobActions is a Minecraft plugin that enables players to create, list, and fulfill orders for items using an in-game currency called MetaCoins. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
+JobActions is a Minecraft plugin that enables players to create, list, and fulfil orders for items using an in-game currency called MetaCoins. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
 
 ## Features
 
-- **Create Orders:** Players can create orders for specific items or for items they are currently holding in their hand.
+- **Create Orders:** Players can create orders for specific items or for items they are currently holding in their hands.
 - **List Orders:** Players can list all orders, filter orders by user or item, and manage orders through a GUI.
 - **Receive Orders:** Players can receive their fulfilled orders through a GUI.
 - **Permissions:** Fine-grained permissions control who can create, list, cancel, and receive orders.
@@ -20,8 +22,8 @@ Creates an order for a specified item or the item in hand.
 
 - **item:** The item name (e.g., `oak_planks`).
 - **hand:** Use `hand` to create an order for the item currently held in hand.
-- **amount:** The number of items.
-- **price:** The price in MetaCoins.
+- **Amount:** The number of items.
+- **Price:** The price in MetaCoins.
 
 **Examples:**
 - `/order create oak_planks 128 100` - Orders 128 oak planks for 100 MetaCoins.

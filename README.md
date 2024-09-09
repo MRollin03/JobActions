@@ -4,11 +4,12 @@
 > This Project is WIP and is currently not operatable
 > and are still in development.
 
-JobActions is a Minecraft plugin that enables players to create, list, and fulfil orders for items using an in-game currency called MetaCoins. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
+###Description
+JobActions is a Minecraft plugin that enables players to create, list, and fulfil orders for items using an in-game currency. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
 
 ## Features
 
-- **Create Orders:** Players can create orders for specific items or for items they are currently holding in their hands.
+- **Create Orders:** Players can create orders for specific items or items they are currently holding.
 - **List Orders:** Players can list all orders, filter orders by user or item, and manage orders through a GUI.
 - **Receive Orders:** Players can receive their fulfilled orders through a GUI.
 - **Permissions:** Fine-grained permissions control who can create, list, cancel, and receive orders.
@@ -53,10 +54,10 @@ Opens a GUI for receiving fulfilled orders.
 The `config.yml` file provides several options for customizing the plugin:
 
 ```yaml
-order-basefee: 10 # The fee the person creates a new order. This is mainly to prevent using orders as a item teleportation system.
-order-fee-percentage: # The extra fee in percentage, that is added on top of  the base fee
+order-base fee: 10 # The fee the person creates a new order. This is mainly to prevent using orders as an item teleportation system.
+order-fee-percentage: # The extra fee in percentage, added on top of  the base fee
 order-fee-percentage-activated: true # If true, the fee is a percentage of the initial price rather than a fixed amount of money.
-order-limit: 5 # The maximum amount of orders that can be placed at once.
+order-limit: 5 # The maximum number of orders that can be placed simultaneously.
 order-limit-item-count: 320 # The maximum amount of items per order. 320 = 5 stacks.
 order-timeout: 10080 # The timeout for an order in minutes (e.g., 7 days).
 

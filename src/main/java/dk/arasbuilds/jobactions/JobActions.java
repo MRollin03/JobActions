@@ -32,7 +32,7 @@ public class JobActions extends JavaPlugin implements Listener {
 
         //initialize SQLLite database
         try{
-            if(getDataFolder().exists()){
+            if(!getDataFolder().exists()){
                 getDataFolder().mkdirs();
             }
             jobActionsDatabase = new JobActionsDatabase(getDataFolder().getAbsolutePath() + "/jobactions.db");
@@ -50,26 +50,20 @@ public class JobActions extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new CompletedOrderVaultGUI(), this);
         getServer().getPluginManager().registerEvents(new CompletedOrderVaultGUIListener(), this);
 
-
-        File dataFolder = getDataFolder();
-        if (!dataFolder.exists()) {
-            dataFolder.mkdirs(); // Create directories if they don't exist
-        }
-        File dataFile = new File(dataFolder, "orders.dat");
-
         // Save the default config file if it doesn't exist
         saveDefaultConfig();
         config = getConfig();
 
         // Load config values here.
-        int orderFee = config.getInt("Order.order-fee");
-        boolean orderFeePercentage = config.getBoolean("Order.order-fee-percentage");
+        int orderbasefee = config.getInt("Order.order-basefee");
+        double orderFeePercentage = config.getDouble("Order.order-fee-percentage");
+        boolean orderfeepercentageactivated = config.getBoolean("Order.order-fee-percentage-activated");
         int orderLimit = config.getInt("Order.order-limit");
-        int orderLimitItemCount = config.getInt("Order.order-limit-item-count");
+        int orderLimitItemCount = config.getInt("Order.order-limit-stack-count");
         int orderTimeout = config.getInt("Order.order-timeout");
 
         // For debugging purposes, print these values to the console
-        getLogger().info("Order Fee: " + orderFee);
+        getLogger().info("Order Fee: " + orderbasefee);
         getLogger().info("Order Fee Percentage: " + orderFeePercentage);
         getLogger().info("Order Limit: " + orderLimit);
         getLogger().info("Order Limit Item Count: " + orderLimitItemCount);
@@ -101,20 +95,23 @@ public class JobActions extends JavaPlugin implements Listener {
     public int getOrderBaseFee() {
         return config.getInt("Order.order-basefee");
     }
+
     public double getOrderFeePercentage() {
         return config.getDouble("Order.order-fee-percentage");
     }
 
-    public boolean isOrderFeePercentage() {
-        return config.getBoolean("Order.order-fee-percentage-activated");
+    public int isOrderFeePercentageActivated(){
+        return config.getInt("Order.order-fee-percentage-activated");
     }
+
+
 
     public int getOrderLimit() {
         return config.getInt("Order.order-limit");
     }
 
     public int getOrderLimitStackCount() {
-        return config.getInt("Order.order-limit-item-count");
+        return config.getInt("Order.order-limit-stack-count");
     }
 
     public int getOrderTimeout() {

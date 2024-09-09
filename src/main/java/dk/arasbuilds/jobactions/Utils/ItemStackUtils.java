@@ -1,7 +1,8 @@
 package dk.arasbuilds.jobactions.Utils;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Type;
@@ -30,6 +31,29 @@ public class ItemStackUtils {
         }
         return itemStacks;
     }
+
+    public static String serializeItemStack(ItemStack itemStack) {
+        List<String> itemStrings = new ArrayList<>();
+        itemStrings.add(itemStackToJson(itemStack));
+        return gson.toJson(itemStrings);
+    }
+
+
+
+    public static ItemStack deserializeItemStack(String jsonString) {
+        JsonElement jsonElement = JsonParser.parseString(jsonString);
+        if (jsonElement.isJsonObject()) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            // Your existing deserialization code
+        } else {
+            throw new IllegalStateException("Expected a JSON object");
+        }
+    }
+
+
+
+
+
 
     private static String itemStackToJson(ItemStack itemStack) {
         return gson.toJson(itemStack.serialize());

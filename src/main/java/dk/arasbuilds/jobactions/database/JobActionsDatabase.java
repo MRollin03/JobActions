@@ -22,8 +22,10 @@ public class JobActionsDatabase {
         try (Statement statement = connection.createStatement()) {
             statement.execute("""
                 CREATE TABLE IF NOT EXISTS player_items (
-                    player_uuid TEXT PRIMARY KEY,
-                    item_stacks TEXT
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    player_uuid VARCHAR(36),
+                    item_stack TEXT,
+                    stack_size INT
                 )
              """);
             // Create item_orders table
@@ -221,13 +223,26 @@ public class JobActionsDatabase {
     }
 
     public void savePlayerItems(UUID playerUUID, List<ItemStack> itemStacks) {
-        String itemStacksJson = ItemStackUtils.serializeItemStacks(itemStacks);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "REPLACE INTO player_items (player_uuid, item_stacks) VALUES (?, ?)"
-        )) {
-            preparedStatement.setString(1, playerUUID.toString());
-            preparedStatement.setString(2, itemStacksJson);
-            preparedStatement.executeUpdate();
+        try {
+            // Clear the existing items for the player first
+            try (PreparedStatement deleteStatement = connection.prepareStatement(
+                    "DELETE FROM player_items WHERE player_uuid = ?"
+            )) {
+                deleteStatement.setString(1, playerUUID.toString());
+                deleteStatement.executeUpdate();
+            }
+
+            // Insert each ItemStack into the database as a new row
+            try (PreparedStatement insertStatement = connection.prepareStatement(
+                    "INSERT INTO player_items (player_uuid, item_stack) VALUES (?, ?)"
+            )) {
+                for (ItemStack itemStack : itemStacks) {
+                    String itemStackJson = ItemStackUtils.serializeItemStack(itemStack);
+                    insertStatement.setString(1, playerUUID.toString());
+                    insertStatement.setString(2, itemStackJson);
+                    insertStatement.executeUpdate();
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -236,19 +251,26 @@ public class JobActionsDatabase {
     public List<ItemStack> loadPlayerItems(UUID playerUUID) {
         List<ItemStack> itemStacks = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT item_stacks FROM player_items WHERE player_uuid = ?"
+                "SELECT item_stack FROM player_items WHERE player_uuid = ?"
         )) {
             preparedStatement.setString(1, playerUUID.toString());
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                String itemStacksJson = resultSet.getString("item_stacks");
-                itemStacks = ItemStackUtils.deserializeItemStacks(itemStacksJson);
+
+            while (resultSet.next()) {
+                String itemStackJson = resultSet.getString("item_stack");
+                System.out.println(itemStackJson);
+                ItemStack itemStack = ItemStackUtils.deserializeItemStack(itemStackJson);
+                if(itemStack == null){
+                    continue;
+                }
+                itemStacks.add(itemStack);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return itemStacks;
     }
+
 
 
 

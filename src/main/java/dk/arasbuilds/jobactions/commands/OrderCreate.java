@@ -47,7 +47,7 @@ public class OrderCreate implements CommandExecutor {
 
         //Check if item request is above OrderLimitStacks
         if(material.getMaxStackSize() * JobActions.getInstance().getOrderLimitStackCount() < Integer.parseInt(args[1])){
-            player.sendMessage("Combined order limit exceeded (max stack size is " + args[1] + ")");
+            player.sendMessage("Combined order limit exceeded (max stack size is " + JobActions.getInstance().getOrderLimitStackCount() + ")");
             return true;
         }
 
@@ -59,6 +59,7 @@ public class OrderCreate implements CommandExecutor {
         }
 
         JobActions.getInstance().getJobActionsDatabase().addOrder(order);
+        player.sendMessage(ChatColor.GREEN + "Order created!");
         return true;
     }
 

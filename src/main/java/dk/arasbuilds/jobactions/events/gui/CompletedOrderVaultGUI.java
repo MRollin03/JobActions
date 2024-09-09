@@ -13,10 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class CompletedOrderVaultGUI implements Listener {
 
@@ -24,20 +21,27 @@ public class CompletedOrderVaultGUI implements Listener {
     private static final int INVENTORY_SIZE = INVENTORY_ROWS * 9;
     private static final int MAX_ITEMS_DISPLAY = 3 * 9;
     private static final String GUI_TITLE = ChatColor.RED + "Completed Orders Vault";
-    private static Queue<ItemStack> itemsQueue = new LinkedList<>();
+    private static final Map<UUID, Queue<ItemStack>> playerItemsQueueMap = new HashMap<>();
 
     public static void DisplayGUI(Player player) {
         // Create the inventory for the player
-        Inventory inv = Bukkit.createInventory( player, INVENTORY_SIZE, GUI_TITLE);
+        Inventory inv = Bukkit.createInventory(player, INVENTORY_SIZE, GUI_TITLE);
 
         // Load the player's items and initialize the queue
         List<ItemStack> itemList = JobActions.getInstance().getJobActionsDatabase().loadPlayerItems(player.getUniqueId());
-        itemsQueue.clear();
-        itemsQueue.addAll(itemList);
+        Queue<ItemStack> itemsQueue = new LinkedList<>(itemList);
+
+        System.out.println(itemsQueue + "AAAAAAAAAAAAAAA" );
+
+        // Store the queue for later access
+        playerItemsQueueMap.put(player.getUniqueId(), itemsQueue);
+
+        System.out.println("Items queue size: " + itemsQueue.size());
 
         // Add items from the queue to the inventory, up to a maximum of 27 (9*3) items
         for (int i = 0; i < Math.min(itemsQueue.size(), MAX_ITEMS_DISPLAY); i++) {
             inv.setItem(i, itemsQueue.poll());
+            System.out.println(i + ": " + itemsQueue.size());
         }
 
         addNavigationItems(inv);
@@ -71,10 +75,14 @@ public class CompletedOrderVaultGUI implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        List<ItemStack> itemLeftList = new ArrayList<>();
+        UUID playerUUID = player.getUniqueId();
 
-        // Check if the inventory title matches the GUI title
+        // Retrieve the player's item queue
+        Queue<ItemStack> itemsQueue = playerItemsQueueMap.get(playerUUID);
+
         if (event.getView().getTitle().equals(GUI_TITLE)) {
+            List<ItemStack> itemLeftList = new ArrayList<>();
+
             // Collect remaining items, except the last row (navigation items)
             for (int i = 0; i < event.getInventory().getSize() - 9; i++) {
                 ItemStack item = event.getInventory().getItem(i);
@@ -83,15 +91,17 @@ public class CompletedOrderVaultGUI implements Listener {
                 }
             }
 
-            // Synchronize the addition of items to avoid concurrency issues
+            // Synchronize and save remaining items
             synchronized (itemsQueue) {
-                if (itemsQueue != null) { // Null check for safety
-                    itemsQueue.addAll(itemLeftList);
-                }
+                itemsQueue.addAll(itemLeftList);
             }
 
             // Save remaining items to the database
-            JobActions.getInstance().getJobActionsDatabase().savePlayerItems(player.getUniqueId(), new ArrayList<>(itemsQueue));
+            JobActions.getInstance().getJobActionsDatabase().savePlayerItems(playerUUID, new ArrayList<>(itemsQueue));
         }
+
+        // Remove the player's queue from the map
+        playerItemsQueueMap.remove(playerUUID);
     }
 }
+

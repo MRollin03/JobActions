@@ -29,15 +29,6 @@ public class JobActionsDatabase {
             )
             """);
             statement.execute("""
-                CREATE TABLE IF NOT EXISTS player_items (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    player_uuid VARCHAR(36),
-                    item_stack TEXT,
-                    stack_size INTEGER
-                )
-            """);
-
-            statement.execute("""
                 CREATE TABLE IF NOT EXISTS vaultstack (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     player_uuid VARCHAR(36),
@@ -46,7 +37,6 @@ public class JobActionsDatabase {
                     itemstack_lore TEXT
                 )
             """);
-
             statement.execute("""
                 CREATE TABLE IF NOT EXISTS item_orders (
                     order_id TEXT PRIMARY KEY,

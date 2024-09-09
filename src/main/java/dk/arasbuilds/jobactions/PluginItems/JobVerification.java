@@ -51,6 +51,10 @@ public class JobVerification {
             jobactions.getJobActionsDatabase().clearPlayerVault(order.getUuid());
             jobactions.getJobActionsDatabase().addStacksToVault(order.getUuid(), vaultItems);
 
+            //send players messages
+            if(Bukkit.getOfflinePlayer(order.getUuid()).isOnline()){
+                Bukkit.getPlayer(order.getUuid()).sendMessage(ChatColor.GREEN + "" + player +" have completed the order");
+            }
             player.sendMessage(ChatColor.GREEN + "Order finished, you received " + order.getPrice() + " " + VaultHook.getEconomyCurrency());
 
 

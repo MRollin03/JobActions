@@ -18,7 +18,6 @@ public class CompletedOrderVaultGUI implements Listener {
 
     private static final int INVENTORY_ROWS = 4;
     private static final int INVENTORY_SIZE = INVENTORY_ROWS * 9;
-    private static final int MAX_ITEMS_DISPLAY = (3 * 9);
     private static final String GUI_TITLE = ChatColor.RED + "Completed Orders Vault";
     private static final Map<UUID, Queue<ItemStack>> playerItemsQueue = new HashMap<>();
 
@@ -39,7 +38,7 @@ public class CompletedOrderVaultGUI implements Listener {
 
         // Add items from the queue to the inventory, up to a maximum of INVENTORY_SIZE items
         int index = 0;
-        while (!itemsQueue.isEmpty() && index < INVENTORY_SIZE) {
+        while (!itemsQueue.isEmpty() && index < 9 * (INVENTORY_ROWS-1)) {
             ItemStack item = itemsQueue.poll();
             inv.setItem(index, item);
             index++;

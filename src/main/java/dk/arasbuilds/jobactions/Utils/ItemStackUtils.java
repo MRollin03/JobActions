@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 public class ItemStackUtils {
 
@@ -50,6 +50,45 @@ public class ItemStackUtils {
         }
         return gson.fromJson(jsonString, ItemStack.class);
     }
+
+    public static List<ItemStack> compressItemStacks(List<ItemStack> items) {
+        Map<Material, Integer> materialCountMap = new HashMap<>();
+
+        // Step 1: Count the total amount for each Material
+        for (ItemStack item : items) {
+            if (item == null || item.getAmount() <= 0) {
+                continue; // Skip null or invalid stacks
+            }
+
+            Material material = item.getType();
+            int amount = item.getAmount();
+
+            // Add to the total count for this material
+            materialCountMap.put(material, materialCountMap.getOrDefault(material, 0) + amount);
+        }
+
+        // Step 2: Compress the stacks into maximum stack size groups
+        List<ItemStack> compressedStacks = new ArrayList<>();
+        for (Map.Entry<Material, Integer> entry : materialCountMap.entrySet()) {
+            Material material = entry.getKey();
+            int totalAmount = entry.getValue();
+            int maxStackSize = material.getMaxStackSize();
+
+            // Create full stacks as much as possible
+            while (totalAmount > maxStackSize) {
+                compressedStacks.add(new ItemStack(material, maxStackSize));
+                totalAmount -= maxStackSize;
+            }
+
+            // Add the remaining stack if there's any leftover
+            if (totalAmount > 0) {
+                compressedStacks.add(new ItemStack(material, totalAmount));
+            }
+        }
+
+        return compressedStacks;
+    }
+
 
 
 

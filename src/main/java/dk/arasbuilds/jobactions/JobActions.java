@@ -30,6 +30,8 @@ public class JobActions extends JavaPlugin implements Listener {
     public void onEnable() {
         instance = this;
 
+        ColoredAsciiArt.main();
+
         //initialize SQLLite database
         try{
             if(!getDataFolder().exists()){
@@ -133,4 +135,30 @@ public class JobActions extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         // Handle player join event if needed
     }
+
+    public class ColoredAsciiArt {
+        // ANSI escape codes for color
+        public static final String RESET = "\033[0m";  // Reset color
+        public static final String RED = "\033[31m";   // Red text
+        public static final String GREEN = "\033[32m"; // Green text
+        public static final String YELLOW = "\033[33m"; // Yellow text
+        public static final String BLUE = "\033[34m";  // Blue text
+        public static final String PURPLE = "\033[35m"; // Purple text
+        public static final String CYAN = "\033[36m";  // Cyan text
+        public static final String WHITE = "\033[37m"; // White text
+
+        public static void main() {
+            // Print colored ASCII art
+            System.out.println(RED + "       __      __                    " + RESET);
+            System.out.println(GREEN + "      / /___  / /_                   " + RESET);
+            System.out.println(YELLOW + " __  / / __ \\/ __ \\                  " + RESET);
+            System.out.println(BLUE + "/ /_/ / /_/ / /_/ /                  " + RESET);
+            System.out.println(PURPLE + "\\____/\\____/_.___/ _                 " + RESET);
+            System.out.println(CYAN + "   /   | _____/ /_(_)___  ____  _____" + RESET);
+            System.out.println(WHITE + "  / /| |/ ___/ __/ / __ \\/ __ \\/ ___/" + RESET);
+            System.out.println(RED + " / ___ / /__/ /_/ / /_/ / / / (__  ) " + RESET);
+            System.out.println(GREEN + "/_/  |_\\___/\\__/_/\\____/_/ /_/____/  " + RESET);
+        }
+    }
+
 }

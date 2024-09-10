@@ -1,6 +1,7 @@
 package dk.arasbuilds.jobactions.events.gui;
 
 import dk.arasbuilds.jobactions.JobActions;
+import dk.arasbuilds.jobactions.Utils.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,12 +22,17 @@ public class CompletedOrderVaultGUI implements Listener {
     private static final String GUI_TITLE = ChatColor.RED + "Completed Orders Vault";
     private static final Map<UUID, Queue<ItemStack>> playerItemsQueue = new HashMap<>();
 
+    /**
+     * Main function for stating Gui for the Vault
+     * @param player for the player opening the vault
+     */
     public static void DisplayGUI(Player player) {
         // Create the inventory for the player
         Inventory inv = Bukkit.createInventory(player, INVENTORY_SIZE, GUI_TITLE);
 
         // Load the player's items and initialize the queue
         List<ItemStack> itemList = JobActions.getInstance().getJobActionsDatabase().getPlayerVault(player.getUniqueId());
+        itemList = ItemStackUtils.compressItemStacks(itemList);
         Queue<ItemStack> itemsQueue = new LinkedList<>(itemList);
 
         System.out.println("Loaded items: " + itemList.size());
@@ -49,7 +55,10 @@ public class CompletedOrderVaultGUI implements Listener {
         player.openInventory(inv);
     }
 
-
+    /**
+     * Adds navigation buttons to the GUI
+     * @param inv
+     */
     private static void addNavigationItems(Inventory inv) {
         // Previous item
         ItemStack previousItem = createItem(Material.BLUE_WOOL, ChatColor.BLUE + "Previous");
@@ -64,6 +73,12 @@ public class CompletedOrderVaultGUI implements Listener {
         inv.setItem(INVENTORY_SIZE - 4, nextItem);
     }
 
+    /**
+     * Create item for the buttons
+     * @param material material button
+     * @param name  name of button
+     * @return Itemstack / button
+     */
     private static ItemStack createItem(Material material, String name) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -74,6 +89,10 @@ public class CompletedOrderVaultGUI implements Listener {
         return item;
     }
 
+    /**
+     * When closing inventory the GUI items will be added to the database
+     * @param event
+     */
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();

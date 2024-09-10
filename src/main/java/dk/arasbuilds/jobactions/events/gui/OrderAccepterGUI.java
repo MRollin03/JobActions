@@ -15,12 +15,21 @@ import java.util.Objects;
 
 public class OrderAccepterGUI {
 
+    /**
+     * Main function for stating Gui for the accept window
+     * @param player for the player opening the vault
+     */
     public static void DisplayGUI(ItemOrder order, Player player) {
         Inventory inv = Bukkit.createInventory(player, 9, ChatColor.AQUA + " Order Accepter ");
         CreateItemStacks(inv, order);
         player.openInventory(inv);
     }
 
+    /**
+     * Setups the buttons
+     * @param inv inventory where buttons are located
+     * @param order regarding the completion
+     */
     private static void CreateItemStacks(Inventory inv, ItemOrder order) {
         // Create and set order item
         ItemStack orderItem = new ItemStack(order.getMaterial());

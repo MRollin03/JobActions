@@ -17,6 +17,10 @@ import java.util.Objects;
 
 public class MarketGUI {
 
+    /**
+     * Main function for stating Gui for the Market
+     * @param player for the player opening the market
+     */
     public static void Display(Player player){
         System.out.println("Market GUI Create start!");
         player.closeInventory();
@@ -58,6 +62,10 @@ public class MarketGUI {
         player.openInventory(inv);
     }
 
+    /**
+     * Adds navigation buttons to the GUI
+     * @param inv
+     */
     private static void addNavigationItems(Inventory inv) {
         // Previous item
         ItemStack previousItem = new ItemStack(Material.BLUE_WOOL);

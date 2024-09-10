@@ -53,7 +53,7 @@ public class JobVerification {
 
             //send players messages
             if(Bukkit.getOfflinePlayer(order.getUuid()).isOnline()){
-                Bukkit.getPlayer(order.getUuid()).sendMessage(ChatColor.GREEN + "" + player +" have completed the order");
+                Bukkit.getPlayer(order.getUuid()).sendMessage(ChatColor.GREEN + "" + player.getName() +" have completed the order");
             }
             player.sendMessage(ChatColor.GREEN + "Order finished, you received " + order.getPrice() + " " + VaultHook.getEconomyCurrency());
 

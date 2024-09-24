@@ -1,7 +1,7 @@
 name: JobActions
 version: '${project.version}'
 main: dk.arasbuilds.jobactions.JobActions
-api-version: '1.21'
+api-version: '1.21.1'
 softdepend: [Vault]
 
 commands:

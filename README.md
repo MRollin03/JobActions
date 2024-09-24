@@ -1,8 +1,8 @@
 # JobActions 
 
-> [!NOTE]
-> This Project is WIP and is currently not operatable
-> and are still in development.
+> [!IMPORTANT]
+> This Project is WIP and prbably has a bunch of bugs.
+> further testing needed, gladly open issues
 
 ## Description
 JobActions is a Minecraft plugin that enables players to create, list, and fulfil orders for items using an in-game currency. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
@@ -10,6 +10,8 @@ JobActions is a Minecraft plugin that enables players to create, list, and fulfi
 ## Features
 
 - **Create Orders:** Players can create orders for specific items or items they are currently holding.
+- **Order Market**:  Chest GUI with available orders.
+- 
 - **List Orders:** Players can list all orders, filter orders by user or item, and manage orders through a GUI.
 - **Receive Orders:** Players can receive their fulfilled orders through a GUI.
 - **Permissions:** Fine-grained permissions control who can create, list, cancel, and receive orders.
@@ -30,7 +32,15 @@ Creates an order for a specified item or the item in hand.
 - `/order create oak_planks 128 100` - Orders 128 oak planks for 100 MetaCoins.
 - `/order create hand 64 1000` - Orders 64 of the item in hand for 1000 MetaCoins.
 
-### `/order list [user|item]`
+### `/market`
+Opens market/Chest GUI where all current ordes are listed.
+Itemstack are interactable and order-infomation is 
+stored in the Metadate/lore of the itemstack itself.
+
+
+### `/order list [user|item]` 
+>![NOTE]
+> Function is not yet implemented
 
 Lists orders, optionally filtered by user or item. Opens a GUI for managing orders.
 

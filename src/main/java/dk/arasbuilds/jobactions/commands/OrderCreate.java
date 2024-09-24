@@ -69,15 +69,6 @@ public class OrderCreate implements CommandExecutor {
                     return true;
                 }
             }
-
-
-            try{
-
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-
         }
 
 

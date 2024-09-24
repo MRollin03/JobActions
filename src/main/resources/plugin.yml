@@ -12,7 +12,7 @@ commands:
   OrderCreate:
     description: "Creates an Order"
     usage: "/order create <item|hand> <amount> <price>"
-    permission: orderplugin.create
+    permission: "orderplugin.create"
     permission-message: "You don't have the permission to make an order"
   getorder:
     description: "Gets order/orders"

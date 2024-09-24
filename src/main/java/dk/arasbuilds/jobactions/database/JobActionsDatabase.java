@@ -187,7 +187,7 @@ public class JobActionsDatabase {
         return null; // Return null if no order is found with the given ID
     }
 
-    public boolean removeItemOrder(Player player, ItemOrder order) {
+    public boolean removeItemOrder(ItemOrder order) {
         String orderID = order.getOrderID();
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "DELETE FROM item_orders WHERE order_id = ?"

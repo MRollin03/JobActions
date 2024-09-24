@@ -45,7 +45,7 @@ public class OrderCreate implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "You do not have Joabactions.cancel.self");
                     return true;
                 }
-                if(db.removeItemOrder(player,order)){
+                if(db.removeItemOrder(order)){
                     player.sendMessage(ChatColor.GREEN + "ItemOrder: " + order.getOrderID() +" has been removed");
                     return true;
                 }
@@ -60,7 +60,7 @@ public class OrderCreate implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "You do not have Joabactions.cancel.others");
                     return true;
                 }
-                if(db.removeItemOrder(player,order)){
+                if(db.removeItemOrder(order)){
                     player.sendMessage(ChatColor.GREEN + "ItemOrder: " + order.getOrderID() +" has been removed");
                     return true;
                 }

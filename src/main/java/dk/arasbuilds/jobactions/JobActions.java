@@ -44,7 +44,7 @@ public class JobActions extends JavaPlugin implements Listener {
             Bukkit.getPluginManager().disablePlugin(this);
         }
 
-        getCommand("ordercreate").setExecutor(new OrderCreate());
+        getCommand("order").setExecutor(new OrderCreate());
         getCommand("market").setExecutor(new MarketCommand());
 
         getServer().getPluginManager().registerEvents(new MarketGUIListener(), this);

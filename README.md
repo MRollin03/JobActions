@@ -39,7 +39,7 @@ stored in the Metadate/lore of the itemstack itself.
 
 
 ### `/order list [user|item]` 
->![NOTE]
+>[!NOTE]
 > Function is not yet implemented
 
 Lists orders, optionally filtered by user or item. Opens a GUI for managing orders.

@@ -1,4 +1,4 @@
-<img src="https://github.com/MRollin03/JobActions/edit/master/Git_banner.png">
+<img src="https://github.com/MRollin03/JobActions/blob/master/Git%20banner.png">
 
 
 # JobActions 

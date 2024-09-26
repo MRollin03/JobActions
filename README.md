@@ -1,11 +1,19 @@
 # JobActions 
 
 > [!IMPORTANT]
-> This Project is WIP and prbably has a bunch of bugs.
-> further testing needed, gladly open issues
+> This Project is WIP and probably has a bunch of bugs.
+> Further testing needed, gladly open issues
 
 ## Description
 JobActions is a Minecraft plugin that enables players to create, list, and fulfil orders for items using an in-game currency. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
+
+## Dependencies
+This Plugin is dependent on a few other plugins.
+**Vault:** https://www.spigotmc.org/resources/vault.34315/
+And some kind of economy plugin for vault
+Econ: [XConomy](https://github.com/YiC200333/XConomy) [iConomy](https://www.spigotmc.org/resources/iconomy-reloaded.11170/) for more options see Vault.
+
+x
 
 ## Features
 
@@ -47,7 +55,7 @@ Lists orders, optionally filtered by user or item. Opens a GUI for managing orde
 - **user:** Filter by username (e.g., `/order list ArasBuilds`).
 - **item:** Filter by item name (e.g., `/order list diamond`).
 
-### `/order received`
+### `/order vault`
 
 Opens a GUI for receiving fulfilled orders.
 
@@ -73,3 +81,5 @@ order-timeout: 10080 # The timeout for an order in minutes (e.g., 7 days).
 
 Installation
 - Download the latest release of the plugin.
+- Insert into the plugins folder of you server
+- Start the Spigot server as normal.

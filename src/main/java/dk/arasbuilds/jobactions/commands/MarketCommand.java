@@ -1,7 +1,7 @@
 package dk.arasbuilds.jobactions.commands;
 
-import dk.arasbuilds.jobactions.JobActions;
 import dk.arasbuilds.jobactions.events.gui.MarketGUI;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,10 +14,13 @@ public class MarketCommand implements CommandExecutor {
             return false;
         }
         Player player = (Player) commandSender;
-        if (player.hasPermission("market")) {
-            MarketGUI.Display(player);
+        if (!player.hasPermission("market")) {
+            player.sendMessage(ChatColor.RED + "you don't have permission ´market´");
             return true;
         }
-        return false;
+
+        MarketGUI.Display(player);
+        return true;
+
     }
 }

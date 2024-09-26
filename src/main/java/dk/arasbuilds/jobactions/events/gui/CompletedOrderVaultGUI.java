@@ -5,6 +5,8 @@ import dk.arasbuilds.jobactions.Utils.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -125,6 +127,30 @@ public class CompletedOrderVaultGUI implements Listener {
 
         // Remove the player's queue from the map
         playerItemsQueue.remove(playerUUID);
+    }
+
+    /**
+     * Safe way to add a Collection of items to a players vault without losing items
+     * under the process.
+     * @param uuid player uuid
+     * @param items collection of items to add
+     */
+    public static void SafeAddItemToPlayerVault(UUID uuid, Collection<ItemStack> items){
+        JobActions jobactions = JobActions.getInstance();
+        OfflinePlayer player  = Bukkit.getOfflinePlayer(uuid);
+
+        //if online close inventory
+        if(player.isOnline()){
+            player.getPlayer().closeInventory();
+        }
+        List<ItemStack> vaultItems = jobactions.getJobActionsDatabase().getPlayerVault(uuid);
+
+        assert items != null;
+        vaultItems.addAll(items);
+
+        jobactions.getJobActionsDatabase().clearPlayerVault(uuid);
+        jobactions.getJobActionsDatabase().addStacksToVault(uuid, vaultItems);
+
     }
 
 }

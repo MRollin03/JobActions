@@ -4,6 +4,7 @@ import dk.arasbuilds.jobactions.JobActions;
 import dk.arasbuilds.jobactions.Utils.InventoryChecker;
 import dk.arasbuilds.jobactions.Utils.InventoryManipulator;
 import dk.arasbuilds.jobactions.Utils.VaultHook;
+import dk.arasbuilds.jobactions.events.gui.CompletedOrderVaultGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
@@ -43,13 +44,7 @@ public class JobVerification {
             jobactions.getJobActionsDatabase().removeItemOrder(order);
 
             List<ItemStack> removedItems = InventoryManipulator.removeItemsFromInventory(player, order.getMaterial(), order.getAmount());
-            List<ItemStack> vaultItems = jobactions.getJobActionsDatabase().getPlayerVault(order.getUuid());
-
-            assert removedItems != null;
-            vaultItems.addAll(removedItems);
-
-            jobactions.getJobActionsDatabase().clearPlayerVault(order.getUuid());
-            jobactions.getJobActionsDatabase().addStacksToVault(order.getUuid(), vaultItems);
+            CompletedOrderVaultGUI.SafeAddItemToPlayerVault(order.getUuid(), removedItems);
 
             //send players messages
             if(Bukkit.getOfflinePlayer(order.getUuid()).isOnline()){

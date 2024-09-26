@@ -19,7 +19,6 @@ public class MarketCommand implements CommandExecutor {
             return true;
         }
 
-        //TODO some some 
         MarketGUI.Display(player);
         return true;
 

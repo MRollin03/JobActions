@@ -32,7 +32,7 @@ public class OrderCreate implements CommandExecutor {
         if(args[0].equals("cancel")){
             if(!player.hasPermission("Jobactions.cancel")){
                 player.sendMessage(ChatColor.RED + "You do not have the Jobactions.cancel permissions");
-                return false;
+                return true;
             }
             JobActionsDatabase db = JobActions.getInstance().getJobActionsDatabase();
             String orderId = args[1];
@@ -75,32 +75,38 @@ public class OrderCreate implements CommandExecutor {
         /*Create order Logic
             create orders hand or material
         */
-
         {
             if (!player.hasPermission("JobActions.createorder")) {
                 player.sendMessage(ChatColor.RED + "You do not have Jobactions.createorder permissons");
-                return false;
+                return true;
             }
 
-            if (args.length != 3) {
+            if (args.length != 4) {
                 return false;
             }
-            int quantity = Integer.parseInt(args[1]);
-            int price = Integer.parseInt(args[2]);
+            int quantity = Integer.parseInt(args[2]);
+            int price = Integer.parseInt(args[3]);
 
             //Price and order amount can't be zero or negative
-            if (Integer.parseInt(args[2]) < JobActions.getInstance().getOrderBaseFee() || price < 1) {
+            if (price < JobActions.getInstance().getOrderBaseFee() || price < 1) {
                 commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the basefee = " + JobActions.getInstance().getOrderBaseFee());
+                return true;
+            }
+
+            //Limit the amount of orders pl player
+            int currentOrderAmount = JobActions.getInstance().getJobActionsDatabase().getOrdersByPlayer(player.getUniqueId()).size();
+            if (currentOrderAmount > JobActions.getInstance().getOrderLimit()) {
+                commandSender.sendMessage(ChatColor.RED + "Order limit exceeded");
                 return true;
             }
 
             //Get item from hand or requested
             Material material = null;
-            if (args[0].equalsIgnoreCase("hand")) {
+            if (args[1].equalsIgnoreCase("hand")) {
                 material = player.getInventory().getItemInMainHand().getType();
             } else {
                 try {
-                    material = Material.valueOf(args[0].toUpperCase());
+                    material = Material.valueOf(args[1].toUpperCase());
                 } catch (IllegalArgumentException e) {
                     player.sendMessage("Invalid material");
                     return true;

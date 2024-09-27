@@ -7,7 +7,4 @@ softdepend: [Vault]
 commands:
   order:
     description: "General Order"
-    usage: "/order [create/list/market/remove] [ID/Player/Nr]"
-  market:
-    description: "Opens Market"
-    usage: "/market"
+    usage: "/order help"

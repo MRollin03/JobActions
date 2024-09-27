@@ -22,7 +22,7 @@ public class OrderTabCompleter implements TabCompleter {
             list.add("help");
             list.add("cancel");
             list.add("vault");
-            //list.add("market");
+            list.add("market");
             return list;
         }
         if(strings.length == 2 && strings[0].equals("create")) {

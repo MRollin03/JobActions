@@ -1,7 +1,6 @@
 package dk.arasbuilds.jobactions;
 
 import dk.arasbuilds.jobactions.PluginItems.PlayerOrders;
-import dk.arasbuilds.jobactions.commands.MarketCommand;
 import dk.arasbuilds.jobactions.commands.OrderCreate;
 import dk.arasbuilds.jobactions.commands.OrderTabCompleter;
 import dk.arasbuilds.jobactions.database.JobActionsDatabase;
@@ -48,8 +47,6 @@ public class JobActions extends JavaPlugin implements Listener {
 
         getCommand("order").setExecutor(new OrderCreate());
         getCommand("order").setTabCompleter(new OrderTabCompleter());
-
-        getCommand("market").setExecutor(new MarketCommand());
 
         getServer().getPluginManager().registerEvents(new MarketGUIListener(), this);
         getServer().getPluginManager().registerEvents(new OrderGUIListener(), this);

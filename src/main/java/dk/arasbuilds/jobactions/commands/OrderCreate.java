@@ -4,10 +4,9 @@ import dk.arasbuilds.jobactions.JobActions;
 import dk.arasbuilds.jobactions.PluginItems.ItemOrder;
 import dk.arasbuilds.jobactions.database.JobActionsDatabase;
 import dk.arasbuilds.jobactions.events.gui.CompletedOrderVaultGUI;
-import net.milkbowl.vault.chat.Chat;
+import dk.arasbuilds.jobactions.events.gui.MarketGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.data.type.Switch;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -134,6 +133,16 @@ public class OrderCreate implements CommandExecutor {
 
                 JobActions.getInstance().getJobActionsDatabase().addOrder(order);
                 player.sendMessage(ChatColor.GREEN + "Order created!");
+            }
+
+            case "market": {
+                if (!player.hasPermission("JobActions.market")) {
+                    player.sendMessage(ChatColor.RED + "you don't have permission ´market´");
+                    return true;
+                }
+
+                MarketGUI.Display(player);
+                return true;
             }
 
             case "help":{

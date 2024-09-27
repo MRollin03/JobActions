@@ -56,24 +56,30 @@ public class ItemOrder implements Serializable {
             plugin.getJobActionsDatabase().addOrder(this);
     }
 
-    private int calculatePrice(int price){
+    private int calculatePrice(int price) {
         // Calculate the total price:
         // Apply the order fee percentage and base fee to the base price
         JobActions plugin = JobActions.getInstance();
         double fee = 0;
 
-        if(plugin.isOrderFeePercentageActivated())
-        {
-            fee =+ price * (1 - plugin.getOrderFeePercentage() / 100.0);
+        // Apply percentage fee if activated
+        if (plugin.isOrderFeePercentageActivated()) {
+            fee += price * (plugin.getOrderFeePercentage() / 100.0); // Correctly accumulate fee
         }
-        if(plugin.isOrderBaseFeeActivated())
-        {
-            fee =+ plugin.getOrderBaseFee();
+
+        // Apply base fee if activated
+        if (plugin.isOrderBaseFeeActivated()) {
+            fee += plugin.getOrderBaseFee(); // Correctly add the base fee to the total fee
         }
+
         plugin.debug("fee is " + fee);
-        fee = price - fee;
-        plugin.debug("quote is " + fee);
-        return (int) fee;
+
+        // Calculate the final price by subtracting the fee from the original price
+        double finalPrice = price - fee;
+        plugin.debug("final price is " + finalPrice);
+
+        // Return the final price as an integer
+        return (int) finalPrice;
     }
 
 

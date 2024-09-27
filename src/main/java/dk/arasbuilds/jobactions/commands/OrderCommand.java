@@ -91,16 +91,17 @@ public class OrderCommand implements CommandExecutor {
                 }
                 int quantity = Integer.parseInt(args[2]);
                 int price = Integer.parseInt(args[3]);
+                JobActions plugin = JobActions.getInstance();
 
                 //Price and order amount can't be zero or negative
-                if (price < JobActions.getInstance().getOrderBaseFee() || price < 1) {
-                    commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the basefee = " + JobActions.getInstance().getOrderBaseFee());
+                if (price < plugin.getOrderBaseFee() || price < 1) {
+                    commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the basefee = " + plugin.getOrderBaseFee());
                     return true;
                 }
 
                 //Limit the amount of orders pl player
-                int currentOrderAmount = JobActions.getInstance().getJobActionsDatabase().getOrdersByPlayer(player.getUniqueId()).size();
-                if (currentOrderAmount > JobActions.getInstance().getOrderLimit()) {
+                int currentOrderAmount = plugin.getJobActionsDatabase().getOrdersByPlayer(player.getUniqueId()).size();
+                if (currentOrderAmount > plugin.getOrderLimit()) {
                     commandSender.sendMessage(ChatColor.RED + "Order limit exceeded");
                     return true;
                 }
@@ -119,8 +120,8 @@ public class OrderCommand implements CommandExecutor {
                 }
 
                 //Check if item request is above OrderLimitStacks
-                if (material.getMaxStackSize() * JobActions.getInstance().getOrderLimitStackCount() < quantity) {
-                    player.sendMessage("Combined order limit exceeded (max stack size is " + JobActions.getInstance().getOrderLimitStackCount() + ")");
+                if (material.getMaxStackSize() * plugin.getOrderLimitStackCount() < quantity) {
+                    player.sendMessage("Combined order limit exceeded (max stack size is " + plugin.getOrderLimitStackCount() + ")");
                     return true;
                 }
 
@@ -131,7 +132,7 @@ public class OrderCommand implements CommandExecutor {
                     return true;
                 }
 
-                JobActions.getInstance().getJobActionsDatabase().addOrder(order);
+                plugin.getJobActionsDatabase().addOrder(order);
                 player.sendMessage(ChatColor.GREEN + "Order created!");
             }
 

@@ -37,20 +37,19 @@ public class MarketGUI {
                 ItemStack item = new ItemStack(order.getMaterial());
 
                 ItemMeta meta = item.getItemMeta();
+
+                // set Display name
+                meta.setDisplayName(ChatColor.LIGHT_PURPLE
+                        + "Order by "+ Bukkit.getOfflinePlayer(order.getUuid()).getName());
+
                 // Set lore to item
                 List<String> lore = new ArrayList<String>();
-                lore.add(Objects.requireNonNull(Bukkit.getOfflinePlayer(order.getUuid())).getName());
-                lore.add(order.getMaterial().name() + " x " + order.getAmount());
+                lore.add(ChatColor.BLUE + "Amount: " + order.getAmount() + " " + order.getMaterial());
+                lore.add(ChatColor.GOLD + "Payment: " + order.getPrice() + " " + VaultHook.getEconomyCurrency());
                 lore.add(order.getOrderID());
                 meta.setLore(lore);
-                meta.setLore(lore);
 
-                meta.setDisplayName(ChatColor.LIGHT_PURPLE
-                        + ""+ Bukkit.getOfflinePlayer(order.getUuid()).getName()
-                        + ":  Amount:" + order.getAmount() + " Quote:"
-                        + order.getPrice() + " " + VaultHook.getEconomyCurrency());
                 item.setItemMeta(meta);
-
 
                 inv.setItem(i, item);
             }

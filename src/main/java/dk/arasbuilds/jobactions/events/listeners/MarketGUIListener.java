@@ -62,7 +62,6 @@ public class MarketGUIListener implements Listener {
                         return; // Cancelled event if lore is null or empty
                     }
                     String id = lore.get(2);
-                    System.out.println("this is the id" + id);
                     ItemOrder order = JobActions.getInstance().getJobActionsDatabase().getOrderById(id);
                     OrderAccepterGUI.DisplayGUI(order, player);
 

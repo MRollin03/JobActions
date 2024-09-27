@@ -12,7 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class OrderCreate implements CommandExecutor {
+public class OrderCommand implements CommandExecutor {
 
 
     @Override
@@ -144,6 +144,8 @@ public class OrderCreate implements CommandExecutor {
                 MarketGUI.Display(player);
                 return true;
             }
+
+            case "reload": {JobActions.getInstance().reloadConfig();}
 
             case "help":{
                 JobActions.getInstance().help(player);

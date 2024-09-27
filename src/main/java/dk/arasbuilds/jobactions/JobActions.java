@@ -1,7 +1,7 @@
 package dk.arasbuilds.jobactions;
 
 import dk.arasbuilds.jobactions.PluginItems.PlayerOrders;
-import dk.arasbuilds.jobactions.commands.OrderCreate;
+import dk.arasbuilds.jobactions.commands.OrderCommand;
 import dk.arasbuilds.jobactions.commands.OrderTabCompleter;
 import dk.arasbuilds.jobactions.database.JobActionsDatabase;
 import dk.arasbuilds.jobactions.events.gui.CompletedOrderVaultGUI;
@@ -17,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.sql.SQLException;
 
 public class JobActions extends JavaPlugin implements Listener {
@@ -45,7 +44,7 @@ public class JobActions extends JavaPlugin implements Listener {
             Bukkit.getPluginManager().disablePlugin(this);
         }
 
-        getCommand("order").setExecutor(new OrderCreate());
+        getCommand("order").setExecutor(new OrderCommand());
         getCommand("order").setTabCompleter(new OrderTabCompleter());
 
         getServer().getPluginManager().registerEvents(new MarketGUIListener(), this);

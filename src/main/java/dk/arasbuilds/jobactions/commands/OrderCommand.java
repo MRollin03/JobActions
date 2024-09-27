@@ -25,6 +25,7 @@ public class OrderCommand implements CommandExecutor {
 
         switch(args[0].toLowerCase()) {
             case "vault": {
+                if(args.length != 1) { JobActions.getInstance().help(player); return true; }
                 if (!player.hasPermission("JobActions.vault")) {
                     player.sendMessage(ChatColor.RED + "You do not have JobActions.received permissons");
                     return false;
@@ -34,14 +35,18 @@ public class OrderCommand implements CommandExecutor {
             }
 
             case "cancel": {
+                if(args.length != 2) {JobActions.getInstance().help(player); return true;}
+
                 if (!player.hasPermission("Jobactions.cancel")) {
                     player.sendMessage(ChatColor.RED + "You do not have the Jobactions.cancel permissions");
                     return true;
                 }
-                JobActionsDatabase db = JobActions.getInstance().getJobActionsDatabase();
+
                 String orderId = args[1];
+                JobActionsDatabase db = JobActions.getInstance().getJobActionsDatabase();
                 ItemOrder order = db.getOrderById(orderId);
-                if (order.equals(null)) {
+
+                if (order == null) {
                     player.sendMessage(ChatColor.RED + "Order does not exist or orderid is wrong");
                     return true;
                 }
@@ -87,7 +92,8 @@ public class OrderCommand implements CommandExecutor {
                 }
 
                 if (args.length != 4) {
-                    return false;
+                    JobActions.getInstance().help(player);
+                    return true;
                 }
                 int quantity = Integer.parseInt(args[2]);
                 int price = Integer.parseInt(args[3]);

@@ -2,7 +2,6 @@ package dk.arasbuilds.jobactions.PluginItems;
 import dk.arasbuilds.jobactions.JobActions;
 import dk.arasbuilds.jobactions.Utils.OrderIDGenerator;
 import dk.arasbuilds.jobactions.Utils.VaultHook;
-import dk.arasbuilds.jobactions.database.JobActionsDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -31,10 +30,12 @@ public class ItemOrder implements Serializable {
 
     public ItemOrder(OfflinePlayer player, Material material, int amount, int price){
 
+        JobActions plugin = JobActions.getInstance();
+
         if(VaultHook.getBalance(player) < price){ return;}
 
 
-        if (material.getMaxStackSize() * JobActions.getInstance().getOrderLimit() < amount){
+        if (material.getMaxStackSize() * plugin.getOrderLimit() < amount){
             if(player.isOnline()){
                 Player onlinePlayer = player.getPlayer();
                 assert onlinePlayer != null;
@@ -52,27 +53,26 @@ public class ItemOrder implements Serializable {
             this.amount = amount;
             this.price = calculatePrice(price);
 
-
-            JobActions jobActions = JobActions.getInstance();
-            jobActions.getJobActionsDatabase().addOrder(this);
+            plugin.getJobActionsDatabase().addOrder(this);
     }
 
     private int calculatePrice(int price){
         // Calculate the total price:
         // Apply the order fee percentage and base fee to the base price
+        JobActions plugin = JobActions.getInstance();
         double fee = 0;
 
-        if(JobActions.getInstance().isOrderFeePercentageActivated())
+        if(plugin.isOrderFeePercentageActivated())
         {
-            fee =+ price * (1 - JobActions.getInstance().getOrderFeePercentage() / 100.0);
+            fee =+ price * (1 - plugin.getOrderFeePercentage() / 100.0);
         }
-        if(JobActions.getInstance().isOrderBaseFeeActivated())
+        if(plugin.isOrderBaseFeeActivated())
         {
-            fee =+ JobActions.getInstance().getOrderBaseFee();
+            fee =+ plugin.getOrderBaseFee();
         }
-        System.out.println("fee is: " + fee);
+        plugin.debug("fee is " + fee);
         fee = price - fee;
-        System.out.println("Quote is:" + fee);
+        plugin.debug("quote is " + fee);
         return (int) fee;
     }
 

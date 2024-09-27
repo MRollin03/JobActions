@@ -14,21 +14,23 @@ public class OrderGUIListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
+
         if (event.getView().getTitle().equals(ChatColor.AQUA + " Order Accepter ")) {
+            JobActions plugin = JobActions.getInstance();
             int slot = event.getSlot();
 
             switch (slot) {
                 case 0:
-                    System.out.print("Attempting Accepting");
+                    plugin.debug("Attempting accepting order");
 
                     ItemStack item = event.getInventory().getItem(4);
                     assert item != null;
                     String id = item.getItemMeta().getLore().get(2);
 
-                    System.out.println("this is the id" + id);
-                    ItemOrder order = JobActions.getInstance().getJobActionsDatabase().getOrderById(id);
+                    plugin.debug("this is the id" + id);
+                    ItemOrder order = plugin.getJobActionsDatabase().getOrderById(id);
 
-                    System.out.println(
+                    plugin.debug(
                             order.getOrderID()      + " "
                             + order.getAmount()     + " "
                             + order.getPrice()      + " "

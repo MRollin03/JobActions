@@ -40,9 +40,12 @@ public class JobActions extends JavaPlugin implements Listener {
             jobActionsDatabase = new JobActionsDatabase(getDataFolder().getAbsolutePath() + "/jobactions.db");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Failed to load JobActions's database!" + e.getMessage());
+            debug("Failed to load JobActions's database!" + e.getMessage());
             Bukkit.getPluginManager().disablePlugin(this);
         }
+
+        saveDefaultConfig();
+        loadConfig();
 
         getCommand("order").setExecutor(new OrderCommand());
         getCommand("order").setTabCompleter(new OrderTabCompleter());
@@ -52,27 +55,16 @@ public class JobActions extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new CompletedOrderVaultGUI(), this);
         getServer().getPluginManager().registerEvents(new CompletedOrderVaultGUIListener(), this);
 
-        // Save the default config file if it doesn't exist
-        saveDefaultConfig();
-        config = getConfig();
-
-        // Load config values here.
-        int orderbasefee = config.getInt("Order.order-basefee");
-        double orderFeePercentage = config.getDouble("Order.order-fee-percentage");
-        boolean orderfeepercentageactivated = config.getBoolean("Order.order-fee-percentage-activated");
-        int orderLimit = config.getInt("Order.order-limit");
-        int orderLimitItemCount = config.getInt("Order.order-limit-stack-count");
-        int orderTimeout = config.getInt("Order.order-timeout");
-
-        // For debugging purposes, print these values to the console
-        getLogger().info("Order Fee: " + orderbasefee);
-        getLogger().info("Order Fee Percentage: " + orderFeePercentage);
-        getLogger().info("Order Limit: " + orderLimit);
-        getLogger().info("Order Limit Item Count: " + orderLimitItemCount);
-        getLogger().info("Order Timeout: " + orderTimeout);
+        loadConfig();
 
         // Register events
         getServer().getPluginManager().registerEvents(this, this);
+    }
+
+    public void loadConfig(){
+        reloadConfig();
+        config = getConfig();
+        printConfig();
     }
 
     @Override
@@ -89,13 +81,19 @@ public class JobActions extends JavaPlugin implements Listener {
         }
     }
 
+    public void printConfig(){
+        // For debugging purposes, print these values to the console
+        if(!isDebug()){return;}
+        getLogger().info("Debug activated: " + isDebug());
+        getLogger().info("Order Fee: " + getOrderBaseFee());
+        getLogger().info("Order Fee Percentage: " + getOrderFeePercentage());
+        getLogger().info("Order Limit: " + getOrderLimit());
+        getLogger().info("Order Limit Item Count: " + getOrderLimitStackCount());
+        getLogger().info("Order Timeout: " + getOrderTimeout());
+    }
 
     public static JobActions getInstance() {
         return instance;
-    }
-
-    public FileConfiguration getConfiguration() {
-        return config;
     }
 
     public int getOrderBaseFee() {
@@ -122,6 +120,10 @@ public class JobActions extends JavaPlugin implements Listener {
         return config.getInt("Order.order-limit-stack-count");
     }
 
+    public boolean isDebug(){
+        return config.getBoolean("debug");
+    }
+
     public int getOrderTimeout() {
         return config.getInt("Order.order-timeout");
     }
@@ -134,6 +136,12 @@ public class JobActions extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         // Handle player join event if needed
+    }
+
+    public void debug(String message){
+        if(this.isDebug()){
+            this.getLogger().info(message);
+        }
     }
 
     public void help(Player player){

@@ -145,7 +145,7 @@ public class OrderCommand implements CommandExecutor {
                 return true;
             }
 
-            case "reload": {JobActions.getInstance().reloadConfig();}
+            case "reload": {JobActions.getInstance().loadConfig(); player.sendMessage( ChatColor.ITALIC + "[JobActions] Configs Reloaded"); return true;}
 
             case "help":{
                 JobActions.getInstance().help(player);

@@ -13,7 +13,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class MarketGUI {
 
@@ -22,14 +21,15 @@ public class MarketGUI {
      * @param player for the player opening the market
      */
     public static void Display(Player player){
-        System.out.println("Market GUI Create start!");
+        JobActions plugin = JobActions.getInstance();
+        plugin.debug(player.getName() + " opened Market!");
         player.closeInventory();
 
         //Create Inventory GUI
         Inventory inv = Bukkit.createInventory( player,9 * 6, ChatColor.RED + "Job Market");
 
         ArrayList<ItemOrder> jobs = JobActions.getInstance().getJobActionsDatabase().getAllItemOrders();
-        System.out.println(jobs.size());
+        plugin.debug("amount of orders on market: " + jobs.size());
 
         if(jobs.size() > 0){
             for (int i = 0; i < Math.min(jobs.size(), 9 * (6 - 1)); i++) {
@@ -57,7 +57,6 @@ public class MarketGUI {
 
         addNavigationItems(inv);
 
-        System.out.print("Opens");
         player.openInventory(inv);
     }
 

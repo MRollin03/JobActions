@@ -29,20 +29,21 @@ public class CompletedOrderVaultGUI implements Listener {
      * @param player for the player opening the vault
      */
     public static void DisplayGUI(Player player) {
+        JobActions plugin = JobActions.getInstance();
         // Create the inventory for the player
         Inventory inv = Bukkit.createInventory(player, INVENTORY_SIZE, GUI_TITLE);
 
         // Load the player's items and initialize the queue
-        List<ItemStack> itemList = JobActions.getInstance().getJobActionsDatabase().getPlayerVault(player.getUniqueId());
+        List<ItemStack> itemList = plugin.getJobActionsDatabase().getPlayerVault(player.getUniqueId());
         itemList = ItemStackUtils.compressItemStacks(itemList);
         Queue<ItemStack> itemsQueue = new LinkedList<>(itemList);
 
-        System.out.println("Loaded items: " + itemList.size());
+        plugin.debug("Loaded items: " + itemsQueue.size());
 
         // Store the queue for later access
         playerItemsQueue.put(player.getUniqueId(), itemsQueue);
 
-        System.out.println("Items queue size: " + itemsQueue.size());
+        plugin.debug("DISPLAY GUI: Items queue size: " + itemsQueue.size());
 
         // Add items from the queue to the inventory, up to a maximum of INVENTORY_SIZE items
         int index = 0;
@@ -50,7 +51,7 @@ public class CompletedOrderVaultGUI implements Listener {
             ItemStack item = itemsQueue.poll();
             inv.setItem(index, item);
             index++;
-            System.out.println("Added item at index " + (index - 1) + ": " + item);
+            plugin.debug("Added item at index " + (index - 1) + ": " + item);
         }
 
         addNavigationItems(inv);

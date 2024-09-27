@@ -1,5 +1,7 @@
 package dk.arasbuilds.jobactions.Utils;
 
+import dk.arasbuilds.jobactions.JobActions;
+
 import java.util.Random;
 
 public class OrderIDGenerator {
@@ -18,6 +20,6 @@ public class OrderIDGenerator {
     public static void main(String[] args) {
         // Generate and print a unique order ID
         String uniqueOrderID = generateOrderID();
-        System.out.println("Generated Order ID: " + uniqueOrderID);
+        JobActions.getInstance().debug("Generated order ID: " + uniqueOrderID);
     }
 }

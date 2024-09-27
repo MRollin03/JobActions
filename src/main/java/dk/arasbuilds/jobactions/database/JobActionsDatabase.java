@@ -1,5 +1,6 @@
 package dk.arasbuilds.jobactions.database;
 
+import dk.arasbuilds.jobactions.JobActions;
 import dk.arasbuilds.jobactions.PluginItems.ItemOrder;
 import dk.arasbuilds.jobactions.Utils.ItemStackUtils;
 import org.bukkit.Bukkit;
@@ -155,7 +156,7 @@ public class JobActionsDatabase {
                 ItemOrder order = new ItemOrder(player, material, amount, price, orderID);
                 order.setOrderID(orderID);
                 orders.add(order);
-                System.out.println("Added ");
+                JobActions.getInstance().debug("Adding order " + orderID);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -225,8 +226,9 @@ public class JobActionsDatabase {
             }
 
             long endTime = System.currentTimeMillis(); // End time for performance monitoring
-            System.out.println("Number of orders fetched: " + count);
-            System.out.println("Time taken to fetch orders: " + (endTime - startTime) + " ms");
+            JobActions plugin = JobActions.getInstance();
+            plugin.debug("Number of orders fetched: " + count);
+            plugin.debug("Time taken to fetch orders: " + (endTime - startTime) + " ms");
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -10,6 +10,7 @@ import dk.arasbuilds.jobactions.events.listeners.CompletedOrderVaultGUIListener;
 import dk.arasbuilds.jobactions.events.listeners.MarketGUIListener;
 import dk.arasbuilds.jobactions.events.listeners.OrderGUIListener;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -137,6 +138,18 @@ public class JobActions extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         // Handle player join event if needed
+    }
+
+    public void help(Player player){
+        player.sendMessage("[JobActions] " + ChatColor.GOLD);
+
+        player.sendMessage(ChatColor.WHITE + "» " + ChatColor.DARK_RED + "/order create <item|hand> <amount> <price> - " + ChatColor.GOLD + "Create an order for the given amount of items for a price you'll pay just for creating the order, fees might apply. ");
+
+        player.sendMessage(ChatColor.WHITE + "» " + ChatColor.DARK_RED + "/order vault - " + ChatColor.GOLD + "Opens the vault where you can gather the items of your fulfilled orders.");
+
+        player.sendMessage(ChatColor.WHITE + "» " + ChatColor.DARK_RED + "/order market - " + ChatColor.GOLD + "Open the GUi where you can see and accept orders.");
+
+        player.sendMessage(ChatColor.WHITE + "» " + ChatColor.DARK_RED + "/order cancel <order_ID - " + ChatColor.GOLD + "Cancel the order of the provided ID.");
     }
 
     public class ColoredAsciiArt {

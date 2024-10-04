@@ -9,18 +9,27 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.*;
+import java.time.Clock;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 public class JobActionsDatabase {
 
     private final Connection connection;
+    private JobActions plugin;
+    private long TimeInterval;
 
     public JobActionsDatabase(String path) throws SQLException {
         this.connection = DriverManager.getConnection("jdbc:sqlite:" + path);
+        this.plugin = JobActions.getInstance();
+
         try (Statement statement = connection.createStatement()) {
             statement.execute("""
             CREATE TABLE IF NOT EXISTS players(
@@ -48,6 +57,24 @@ public class JobActionsDatabase {
                     FOREIGN KEY(player_uuid) REFERENCES players(player_uuid)
                 )
             """);
+
+            //Get the current time of the server, and places it in the new Column if the given
+            // Column in the order_table does not exist. v9.3 -> v9.4.
+            Time.valueOf(LocalTime.now(Clock.systemDefaultZone()));
+            statement.execute(
+                    """
+                IF COL_LENGTH(item_orders, creation_time) IS NULL
+                BEGIN
+                    ALTER TABLE item_orders
+                        ADD LONG Time_Existed
+                END
+                """
+            );
+
+            //Starts Timeout Checker loop (Checks the orders Time Existence)
+            orderTimeOutChecker();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -57,9 +84,19 @@ public class JobActionsDatabase {
         }
     }
 
+    public void orderTimeOutChecker() throws SQLException, InterruptedException {
+        while(true){
+            if(!connection.isClosed() || !(connection == null)){
+                break;
+            }
+            updateTime();
+            TimeInterval = plugin.getTimeInterval(); //Checks here in case config files has been changed and reloaded.
+            Thread.sleep(TimeInterval * 60000); //Pauses for Timinterval * 60000 milli = 1 minute
+        }
+    }
+
 
     //< ORDER RELATED METHODS
-
     public void addPlayer(Player player) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO players (uuid, username) VALUES (?, ?)"
@@ -109,7 +146,6 @@ public class JobActionsDatabase {
         }
     }
 
-
     private boolean orderExists(String orderID) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT 1 FROM item_orders WHERE order_id = ?"
@@ -156,12 +192,56 @@ public class JobActionsDatabase {
                 ItemOrder order = new ItemOrder(player, material, amount, price, orderID);
                 order.setOrderID(orderID);
                 orders.add(order);
-                JobActions.getInstance().debug("Adding order " + orderID);
+                plugin.debug("Adding order " + orderID);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return orders;
+    }
+
+
+    //TODO CHECK TIMEOUT FUNCTION
+    public void updateTime() throws SQLException {
+        ResultSet resultSet = null;
+        int value = plugin.getOrderTimeout();
+        if(plugin.isTimeout()){
+            try(PreparedStatement preparedStatement = connection.prepareStatement(
+                    " SELECT order_id,Time_Existed  FROM order_items WHERE Time_Existed >= ? "
+            )){
+                preparedStatement.setInt(0, value);
+                preparedStatement.execute();
+                resultSet = preparedStatement.getResultSet();
+            }
+            catch(SQLException e){
+                e.printStackTrace();
+                plugin.getLogger().info("Failure getting Time_Existed in SQL-Database.");
+            }
+
+            if(resultSet != null){return;}
+
+            while(resultSet.next()){
+
+                Long timeExisted = resultSet.getLong("Time_Exsisted");
+                String orderid = resultSet.getString("order_id");
+
+                if(plugin.isTimeout() && plugin.getOrderTimeout() <= timeExisted + (TimeInterval * 60000)){
+                    continue;
+                }
+
+                try(PreparedStatement preparedStatement = connection.prepareStatement(
+                        " INSERT INTO order_items (Time_Existed) WHERE order_id = id VALUES ( ?, ?) "
+                )){
+                    preparedStatement.setLong(0, (TimeInterval * 60000));
+                    preparedStatement.setString(1 ,  orderid);
+                    plugin.getLogger().info("Time added to itemorder: " + orderid + "'s Time_Existed");
+                }
+                catch(SQLException e){
+                    e.printStackTrace();
+                    plugin.getLogger().info("Failure inserting into Time_Existed in SQL-Databse.");
+                }
+            }
+        }
     }
 
     public ItemOrder getOrderById(String orderID) {
@@ -226,7 +306,6 @@ public class JobActionsDatabase {
             }
 
             long endTime = System.currentTimeMillis(); // End time for performance monitoring
-            JobActions plugin = JobActions.getInstance();
             plugin.debug("Number of orders fetched: " + count);
             plugin.debug("Time taken to fetch orders: " + (endTime - startTime) + " ms");
 
@@ -235,8 +314,6 @@ public class JobActionsDatabase {
         }
         return orders;
     }
-
-
 
     // PLAYER VAULT METHODS
     public void addStacksToVault(UUID playerUUID, List<ItemStack> itemStacks) {
@@ -255,25 +332,6 @@ public class JobActionsDatabase {
             preparedStatement.executeBatch(); // Execute all at once
         } catch (SQLException e) {
             e.printStackTrace(); // Handle exception appropriately
-        }
-    }
-
-
-    public void addStackToVault(UUID playerUUID, ItemStack itemStack){
-        try {
-            // Insert each ItemStack into the database as a new row
-            try (PreparedStatement insertStatement = connection.prepareStatement(
-                    "INSERT INTO vaultstack (player_uuid, material, amount, itemstack_Meta,) VALUES (?, ?, ?, ?)"
-            )) {
-                String itemStackJson = ItemStackUtils.serializeItemStack(itemStack);
-                insertStatement.setString(1, playerUUID.toString());
-                insertStatement.setString(2, itemStack.getType().toString());
-                insertStatement.setInt(3, itemStack.getAmount());
-                insertStatement.setString(4, itemStackJson);
-                insertStatement.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 

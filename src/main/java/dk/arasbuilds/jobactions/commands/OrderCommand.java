@@ -99,11 +99,26 @@ public class OrderCommand implements CommandExecutor {
                 int price = Integer.parseInt(args[3]);
                 JobActions plugin = JobActions.getInstance();
 
-                //Price and order amount can't be zero or negative
-                if (price < plugin.getOrderBaseFee() || price < 1) {
-                    commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the basefee = " + plugin.getOrderBaseFee());
-                    return true;
+                if(price < 0){
+                    player.sendMessage(ChatColor.RED + "Payment can't be negative.");
                 }
+
+                //Price and order amount can't be zero or negative
+                if(plugin.isOrderBaseFeeActivated() && !plugin.isOrderFeePercentageActivated()){
+                    if (price < plugin.getOrderBaseFee() && price < 1) {
+                        commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the fee = " + Math.ceil(plugin.getOrderBaseFee()));
+                        return true;
+                    }
+                }
+
+                if(plugin.isOrderFeePercentageActivated() && plugin.isOrderBaseFeeActivated()){
+                    if (price < Math.ceil(plugin.getOrderBaseFee() + (price * (0.01 * plugin.getOrderFeePercentage()) ) ) && price < 1) {
+                        commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the fee = " + Math.ceil(plugin.getOrderBaseFee() + (price * (0.01 * plugin.getOrderFeePercentage()) ) ) );
+                        return true;
+                    }
+                }
+
+
 
                 //Limit the amount of orders pl player
                 int currentOrderAmount = plugin.getJobActionsDatabase().getOrdersByPlayer(player.getUniqueId()).size();

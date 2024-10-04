@@ -1,3 +1,7 @@
+#Debug mode activated?
+debug: false
+
+
 #Configs of ordersystem
 Order:
   order-basefee: 10 # The fee the person creates a new order. This is mainly to prevent using orders as a teleportation system.
@@ -7,3 +11,5 @@ Order:
   order-limit: 5 #The maximum amount of orders you can place at once
   order-limit-stack-count: 5 #This is the maximum amount of items you can ask for per order. 320 = 5 stacks. This limits the amount in '/order create <item|hand> <amount> <price>`
   order-timeout: 10080 #The timeout for an order in minutes. This example means 7 days.
+  order-time-interval: 15 #Checks/updates orders time of existence. This Example every 15min.
+  order-timeout-activated: true #Is the timout feature activated (removal of item orders)

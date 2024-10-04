@@ -29,8 +29,7 @@ public class JobActions extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-
-        ColoredAsciiArt.main();
+        logoDisplay();
 
         //initialize SQLLite database
         try{
@@ -84,6 +83,7 @@ public class JobActions extends JavaPlugin implements Listener {
     public void printConfig(){
         // For debugging purposes, print these values to the console
         if(!isDebug()){return;}
+        getLogger().info("Timeout activated" + isTimeout());
         getLogger().info("Debug activated: " + isDebug());
         getLogger().info("Order Fee: " + getOrderBaseFee());
         getLogger().info("Order Fee Percentage: " + getOrderFeePercentage());
@@ -116,6 +116,10 @@ public class JobActions extends JavaPlugin implements Listener {
         return config.getInt("Order.order-limit");
     }
 
+    public  Long getTimeInterval(){
+        return config.getLong("Order.order-time-interval");
+    }
+
     public int getOrderLimitStackCount() {
         return config.getInt("Order.order-limit-stack-count");
     }
@@ -123,6 +127,8 @@ public class JobActions extends JavaPlugin implements Listener {
     public boolean isDebug(){
         return config.getBoolean("debug");
     }
+
+    public boolean isTimeout(){ return config.getBoolean("order-timeout-activated");}
 
     public int getOrderTimeout() {
         return config.getInt("Order.order-timeout");
@@ -144,6 +150,8 @@ public class JobActions extends JavaPlugin implements Listener {
         }
     }
 
+
+
     public void help(Player player){
         player.sendMessage("[JobActions] " + ChatColor.GOLD);
 
@@ -153,13 +161,26 @@ public class JobActions extends JavaPlugin implements Listener {
 
         player.sendMessage(ChatColor.WHITE + "» " + ChatColor.DARK_RED + "/order market - " + ChatColor.GOLD + "Open the GUi where you can see and accept orders.");
 
-        player.sendMessage(ChatColor.WHITE + "» " + ChatColor.DARK_RED + "/order cancel <order_ID - " + ChatColor.GOLD + "Cancel the order of the provided ID.");
+        player.sendMessage(ChatColor.WHITE + "» " + ChatColor.DARK_RED + "/order cancel <order_ID> - " + ChatColor.GOLD + "Cancel the order of the provided ID.");
+    }
+
+
+    public void logoDisplay() {
+        // Print colored ASCII art
+        this.getLogger().info("");
+        this.getLogger().info(ColoredAsciiArt.YELLOW + "       __      __                    " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.YELLOW + "      / /___  / /_                   " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.YELLOW + " __  / / __ \\/ __ \\                  " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.YELLOW + "/ /_/ / /_/ / /_/ /                  " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.YELLOW + "\\____/\\____/_.___/ _                 " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.RED + "   /   | _____/ /_(_)___  ____  _____" + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.RED + "  / /| |/ ___/ __/ / __ \\/ __ \\/ ___/" + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.RED + " / ___ / /__/ /_/ / /_/ / / / (__  ) " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.RED + "/_/  |_\\___/\\__/_/\\____/_/ /_/____/  " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.DARK_GRAY + "By Aras | " + ColoredAsciiArt.RESET + ColoredAsciiArt.DARK_GREEN + "v." + this.getDescription().getVersion() + ColoredAsciiArt.RESET );
     }
 
     public class ColoredAsciiArt {
-
-        private static final JobActions plugin = JobActions.getInstance(); // Get plugin instance for logging
-
         // ANSI escape codes for color
         public static final String RESET = "\033[0m";  // Reset color
         public static final String RED = "\033[31m";   // Red text
@@ -172,21 +193,6 @@ public class JobActions extends JavaPlugin implements Listener {
         public static final String WHITE = "\033[37m"; // White text
         public static final String DARK_GRAY = "\033[90m"; // Dark gray text
 
-
-        public static void main() {
-            // Print colored ASCII art
-            System.out.println();
-            System.out.println(YELLOW + "       __      __                    " + RESET);
-            System.out.println(YELLOW + "      / /___  / /_                   " + RESET);
-            System.out.println(YELLOW + " __  / / __ \\/ __ \\                  " + RESET);
-            System.out.println(YELLOW + "/ /_/ / /_/ / /_/ /                  " + RESET);
-            System.out.println(YELLOW + "\\____/\\____/_.___/ _                 " + RESET);
-            System.out.println(RED + "   /   | _____/ /_(_)___  ____  _____" + RESET);
-            System.out.println(RED + "  / /| |/ ___/ __/ / __ \\/ __ \\/ ___/" + RESET);
-            System.out.println(RED + " / ___ / /__/ /_/ / /_/ / / / (__  ) " + RESET);
-            System.out.println(RED + "/_/  |_\\___/\\__/_/\\____/_/ /_/____/  " + RESET);
-            System.out.println(DARK_GRAY + "By Aras | " + RESET + DARK_GREEN + "v." + plugin.getDescription().getVersion() + RESET );
-        }
     }
 
 }

@@ -11,12 +11,9 @@
 JobActions is a Minecraft plugin that enables players to create, list, and fulfil orders for items using an in-game currency. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
 
 ## Dependencies
-This Plugin is dependent on a few other plugins.
-**Vault:** https://www.spigotmc.org/resources/vault.34315/
+This Plugin is dependent on a few other plugins. [Vault](https://www.spigotmc.org/resources/vault.34315/)
 And some kind of economy plugin for vault
 Econ: [XConomy](https://github.com/YiC200333/XConomy) [iConomy](https://www.spigotmc.org/resources/iconomy-reloaded.11170/) for more options see Vault.
-
-x
 
 ## Features
 

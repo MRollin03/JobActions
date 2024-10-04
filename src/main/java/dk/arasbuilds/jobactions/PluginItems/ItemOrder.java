@@ -87,7 +87,7 @@ public class ItemOrder implements Serializable {
     //For Editing price on order
     public void setPrice(int price) {
         this.price = price;
-        //TODO PRICE EDITING?
+        //TODO PRICE EDITING? not sure yet ( too many exploit possibilites)
     }
 
     public void setOrderID(String orderID) {

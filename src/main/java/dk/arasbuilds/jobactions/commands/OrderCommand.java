@@ -27,7 +27,7 @@ public class OrderCommand implements CommandExecutor {
             case "vault": {
                 if(args.length != 1) { JobActions.getInstance().help(player); return true; }
                 if (!player.hasPermission("JobActions.vault")) {
-                    player.sendMessage(ChatColor.RED + "You do not have JobActions.received permissons");
+                    player.sendMessage(ChatColor.RED + "You do not have JobActions.received permissions");
                     return false;
                 }
                 CompletedOrderVaultGUI.DisplayGUI(player);
@@ -36,11 +36,6 @@ public class OrderCommand implements CommandExecutor {
 
             case "cancel": {
                 if(args.length != 2) {JobActions.getInstance().help(player); return true;}
-
-                if (!player.hasPermission("Jobactions.cancel")) {
-                    player.sendMessage(ChatColor.RED + "You do not have the Jobactions.cancel permissions");
-                    return true;
-                }
 
                 String orderId = args[1];
                 JobActionsDatabase db = JobActions.getInstance().getJobActionsDatabase();
@@ -54,7 +49,7 @@ public class OrderCommand implements CommandExecutor {
                 //remove player's own orders
                 if (order.getUuid().equals(player.getUniqueId())) {
                     if (!player.hasPermission("Jobactions.cancel.self")) {
-                        player.sendMessage(ChatColor.RED + "You do not have Joabactions.cancel.self");
+                        player.sendMessage(ChatColor.RED + "You do not have Jobactions.cancel.self");
                         return true;
                     }
                     if (db.removeItemOrder(order)) {
@@ -67,8 +62,8 @@ public class OrderCommand implements CommandExecutor {
                 }
                 //remove other players orders
                 else {
-                    if (!player.hasPermission("jobactions.cancel.others")) {
-                        player.sendMessage(ChatColor.RED + "You do not have Joabactions.cancel.others");
+                    if (!player.hasPermission("Jobactions.cancel.others")) {
+                        player.sendMessage(ChatColor.RED + "You do not have Jobactions.cancel.others");
                         return true;
                     }
                     if (db.removeItemOrder(order)) {
@@ -159,7 +154,7 @@ public class OrderCommand implements CommandExecutor {
 
             case "market": {
                 if (!player.hasPermission("JobActions.market")) {
-                    player.sendMessage(ChatColor.RED + "you don't have permission ´market´");
+                    player.sendMessage(ChatColor.RED + "you don't have permission ´JobActions.market´");
                     return true;
                 }
 

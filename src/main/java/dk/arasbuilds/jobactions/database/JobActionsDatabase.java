@@ -174,8 +174,8 @@ public class JobActionsDatabase {
         }
     }
 
-    public List<ItemOrder> getOrdersByPlayer(UUID playerUUID) {
-        List<ItemOrder> orders = new ArrayList<>();
+    public ArrayList<ItemOrder> getOrdersByPlayer(UUID playerUUID) {
+        ArrayList<ItemOrder> orders = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT order_id, material, amount, price FROM item_orders WHERE player_uuid = ?"
         )) {

@@ -73,7 +73,7 @@ jobs:
           }
           EOF
           
-          // Upload to curseForge using Project ID and API key from github secrets
+          # Upload to curseForge using Project ID and API key from github secrets
           curl -X POST \
             -H "X-Api-Token: ${{ secrets.BUKKIT_ORG }}" \
             -F "metadata=@metadata.json" \

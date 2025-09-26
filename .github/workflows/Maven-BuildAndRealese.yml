@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v4  # Updated to v4
         with:
           distribution: 'temurin'  # Use Temurin JDK (formerly AdoptOpenJDK)
-          java-version: '17'       # Set your desired Java version here
+          java-version: '21'       # Set your desired Java version here
 
       - name: Build with Maven
         run: mvn clean package
@@ -44,7 +44,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Build with Maven
         run: mvn clean package

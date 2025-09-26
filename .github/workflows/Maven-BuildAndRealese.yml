@@ -57,3 +57,25 @@ jobs:
           files: target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload JAR to Bukkit/CurseForge
+        run: |
+          FILE=$(ls target/*.jar | head -n 1)
+          
+          # Create metadata JSON (adjust releaseType, gameVersions, etc. as needed)
+          cat > metadata.json <<EOF
+          {
+            "changelog": "Automated release from GitHub Actions: ${{ github.ref_name }}",
+            "changelogType": "markdown",
+            "displayName": "Automated Test Release ${{ github.ref_name }}",
+            "releaseType": "release",
+            "gameVersions": [1.20.1]  # Replace with actual supported version IDs
+          }
+          EOF
+          
+          // Upload to curseForge using Project ID and API key from github secrets
+          curl -X POST \
+            -H "X-Api-Token: ${{ secrets.BUKKIT_ORG }}" \
+            -F "metadata=@metadata.json" \
+            -F "file=@${FILE}" \
+            "https://dev.bukkit.org/api/projects/${{PROJECT_ID}}/upload-file"

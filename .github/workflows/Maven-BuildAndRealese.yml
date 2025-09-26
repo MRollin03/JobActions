@@ -78,4 +78,4 @@ jobs:
             -H "X-Api-Token: ${{ secrets.BUKKIT_ORG }}" \
             -F "metadata=@metadata.json" \
             -F "file=@${FILE}" \
-            "https://dev.bukkit.org/api/projects/${{PROJECT_ID}}/upload-file"
+            "https://dev.bukkit.org/api/projects/${{secrets.PROJECT_ID}}/upload-file"

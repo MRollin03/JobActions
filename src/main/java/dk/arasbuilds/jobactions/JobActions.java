@@ -15,8 +15,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.SQLException;
 
 public class JobActions extends JavaPlugin implements Listener {
@@ -25,42 +27,52 @@ public class JobActions extends JavaPlugin implements Listener {
     private PlayerOrders playerOrders;
     private JobActionsDatabase jobActionsDatabase;
 
-
     @Override
     public void onEnable() {
         instance = this;
         logoDisplay();
 
-        //initialize SQLLite database
-        try{
-            if(!getDataFolder().exists()){
-                getDataFolder().mkdirs();
+        // Load config before anything else
+        saveDefaultConfig(); // ensures config.yml exists
+        loadConfig();        // initializes 'config'
+
+        // Now it's safe to use debug() in JobActionsDatabase
+        try {
+            if (!getDataFolder().exists() && !getDataFolder().mkdirs()) {
+                getLogger().severe("Failed to create plugin data folder!");
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
             }
-            jobActionsDatabase = new JobActionsDatabase(getDataFolder().getAbsolutePath() + "/jobactions.db");
+
+            jobActionsDatabase = new JobActionsDatabase(new File(getDataFolder(), "jobactions.db").getPath());
         } catch (SQLException e) {
             e.printStackTrace();
-            debug("Failed to load JobActions's database!" + e.getMessage());
+            getLogger().severe("Failed to load JobActions database: " + e.getMessage());
             Bukkit.getPluginManager().disablePlugin(this);
+            return;
         }
 
-        saveDefaultConfig();
-        loadConfig();
-
+        // Register commands
         getCommand("order").setExecutor(new OrderCommand());
         getCommand("order").setTabCompleter(new OrderTabCompleter());
 
-        getServer().getPluginManager().registerEvents(new MarketGUIListener(), this);
-        getServer().getPluginManager().registerEvents(new OrderGUIListener(), this);
-        getServer().getPluginManager().registerEvents(new CompletedOrderVaultGUI(), this);
-        getServer().getPluginManager().registerEvents(new CompletedOrderVaultGUIListener(), this);
+        // Register listeners
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new MarketGUIListener(), this);
+        pm.registerEvents(new OrderGUIListener(), this);
+        pm.registerEvents(new CompletedOrderVaultGUI(), this);
+        pm.registerEvents(new CompletedOrderVaultGUIListener(), this);
 
-        loadConfig();
+        // Register this class as listener (if it has event handlers)
+        pm.registerEvents(this, this);
 
-        // Register events
-        getServer().getPluginManager().registerEvents(this, this);
+        jobActionsDatabase.startOrderTimeoutChecker();
     }
 
+
+
     public void loadConfig(){
+        saveDefaultConfig(); // ensures config.yml exists
         reloadConfig();
         config = getConfig();
         printConfig();

@@ -57,24 +57,6 @@ public class JobActionsDatabase {
                     FOREIGN KEY(player_uuid) REFERENCES players(player_uuid)
                 )
             """);
-
-            //Get the current time of the server, and places it in the new Column if the given
-            // Column in the order_table does not exist. v9.3 -> v9.4.
-            Time.valueOf(LocalTime.now(Clock.systemDefaultZone()));
-            statement.execute(
-                    """
-                IF COL_LENGTH(item_orders, creation_time) IS NULL
-                BEGIN
-                    ALTER TABLE item_orders
-                        ADD LONG Time_Existed
-                END
-                """
-            );
-
-            //Starts Timeout Checker loop (Checks the orders Time Existence)
-            orderTimeOutChecker();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -84,16 +66,18 @@ public class JobActionsDatabase {
         }
     }
 
-    public void orderTimeOutChecker() throws SQLException, InterruptedException {
-        while(true){
-            if(!connection.isClosed() || !(connection == null)){
-                break;
+    public void startOrderTimeoutChecker() {
+        long ticks = plugin.getTimeInterval() * 60 * 20L; // convert minutes to ticks (20 ticks = 1 sec)
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            try {
+                updateTime();
+                plugin.debug("Checking Item Order Times");
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to update order times: " + e.getMessage());
             }
-            updateTime();
-            TimeInterval = plugin.getTimeInterval(); //Checks here in case config files has been changed and reloaded.
-            Thread.sleep(TimeInterval * 60000); //Pauses for Timinterval * 60000 milli = 1 minute
-        }
+        }, ticks, ticks);
     }
+
 
 
     //< ORDER RELATED METHODS
@@ -122,7 +106,7 @@ public class JobActionsDatabase {
         }
     }
 
-    public void addOrder(ItemOrder order) {
+    public void addOrder(ItemOrder order) { //TODO ADD TIME_OF_CREATION
         try {
             // Check if the order already exists
             if (orderExists(order.getOrderID())) {
@@ -159,7 +143,7 @@ public class JobActionsDatabase {
         }
     }
 
-    private void updateOrder(ItemOrder order) {
+    private void updateOrder(ItemOrder order) { //TODO (MAYBE) ORDER UPDATE
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "UPDATE item_orders SET player_uuid = ?, material = ?, amount = ?, price = ? WHERE order_id = ?"
         )) {
@@ -201,10 +185,10 @@ public class JobActionsDatabase {
     }
 
 
-    //TODO CHECK TIMEOUT FUNCTION
+    //TODO CHECK TIMEOUT FUNCTION LINK WITH TIME OF CREATION
     public void updateTime() throws SQLException {
-        ResultSet resultSet = null;
         int value = plugin.getOrderTimeout();
+        ResultSet resultSet = null;
         if(plugin.isTimeout()){
             try(PreparedStatement preparedStatement = connection.prepareStatement(
                     " SELECT order_id,Time_Existed  FROM order_items WHERE Time_Existed >= ? "
@@ -242,6 +226,7 @@ public class JobActionsDatabase {
                 }
             }
         }
+
     }
 
     public ItemOrder getOrderById(String orderID) {

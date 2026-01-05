@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class JobActionsDatabase {
 
@@ -60,16 +61,109 @@ public class JobActionsDatabase {
         }
     }
 
+    // SCHEDULE TASK
     public void startOrderTimeoutChecker() {
-        long ticks = plugin.getTimeInterval() * 60 * 20L; // convert minutes to ticks (20 ticks = 1 sec)
+        long intervalMinutes = plugin.getTimeInterval();
+        if (intervalMinutes <= 0) {
+            plugin.debug("Invalid time interval: " + intervalMinutes + " minutes. Scheduler not started.");
+            return;
+        }
+
+        long ticks = intervalMinutes * 60 * 20L;
+        plugin.debug("Starting async order timeout checker with interval: " + intervalMinutes + " min (" + ticks + " ticks)");
+
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            try {
-                updateTime();
-                plugin.debug("Checking Item Order Times");
-            } catch (SQLException e) {
-                plugin.getLogger().severe("Failed to update order times: " + e.getMessage());
-            }
+            plugin.debug("Running checkOrderTimeouts()");
+            checkOrderTimeouts();
         }, ticks, ticks);
+    }
+
+
+
+    // FIXED: Async DB query, then sync removal with proper vault return
+    private void checkOrderTimeouts() {
+        if (!plugin.isTimeout()) {
+            return;
+        }
+
+        long timeoutMs = TimeUnit.MINUTES.toMillis(plugin.getOrderTimeout());
+        long now = System.currentTimeMillis();
+
+        plugin.debug("Checking time for item orders...");
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT order_id, player_uuid, material, amount, price, time_of_creation FROM item_orders WHERE ? - time_of_creation >= ?"
+        )) {
+            ps.setLong(1, now);
+            ps.setLong(2, timeoutMs);
+            ResultSet rs = ps.executeQuery();
+
+            List<ItemOrder> expiredOrders = new ArrayList<>();
+            while (rs.next()) {
+                String orderID = rs.getString("order_id");
+                UUID playerUUID = UUID.fromString(rs.getString("player_uuid"));
+                Material material = Material.valueOf(rs.getString("material"));
+                int amount = rs.getInt("amount");
+                int price = rs.getInt("price");
+                long creationTime = rs.getLong("time_of_creation");
+
+                // Calculate how long the order has existed
+                long ageMinutes = TimeUnit.MILLISECONDS.toMinutes(now - creationTime);
+
+                OfflinePlayer player = Bukkit.getOfflinePlayer(playerUUID);
+                ItemOrder order = new ItemOrder(player, material, amount, price, orderID);
+                expiredOrders.add(order);
+
+                plugin.debug("Order " + orderID + " expired (age: " + ageMinutes + " minutes)");
+            }
+
+            // Schedule removal on MAIN THREAD with proper item return to vault
+            if (!expiredOrders.isEmpty()) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    for (ItemOrder order : expiredOrders) {
+                        if (removeItemOrder(order)) {
+                            // Return items to player's vault
+                            UUID playerUUID = order.getUuid();
+                            ItemStack itemStack = new ItemStack(order.getMaterial(), order.getAmount());
+                            addStacksToVault(playerUUID, List.of(itemStack));
+
+                            plugin.debug("Order " + order.getOrderID() + " timed out and removed. Items returned to vault.");
+
+                            // Notify player if online
+                            Player player = Bukkit.getPlayer(playerUUID);
+                            if (player != null && player.isOnline()) {
+                                player.sendMessage("§cYour order for " + order.getAmount() + "x " +
+                                        order.getMaterial().name() + " has expired and items were returned to your vault.");
+                            }
+                        }
+                    }
+                });
+            }
+
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to check time for item orders: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+    // HELPER METHOD: Get order age in minutes
+    public long getOrderAgeMinutes(String orderID) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT time_of_creation FROM item_orders WHERE order_id = ?"
+        )) {
+            ps.setString(1, orderID);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                long creationTime = rs.getLong("time_of_creation");
+                long now = System.currentTimeMillis();
+                return TimeUnit.MILLISECONDS.toMinutes(now - creationTime);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get order age: " + e.getMessage());
+        }
+        return -1;
     }
 
 
@@ -178,52 +272,6 @@ public class JobActionsDatabase {
             e.printStackTrace();
         }
         return orders;
-    }
-
-
-    //TODO CHECK TIMEOUT FUNCTION LINK WITH TIME OF CREATION
-    public void updateTime() throws SQLException {
-        int value = plugin.getOrderTimeout();
-        ResultSet resultSet = null;
-        if(plugin.isTimeout()){
-            try(PreparedStatement preparedStatement = connection.prepareStatement(
-                    " SELECT order_id,time_of_creation  FROM order_items WHERE time_of_creation "
-            )){
-                preparedStatement.execute();
-                resultSet = preparedStatement.getResultSet();
-            }
-            catch(SQLException e){
-                e.printStackTrace();
-                plugin.getLogger().info("Failure getting time_of_creation in SQL-Database.");
-            }
-
-            if(resultSet != null){return;}
-
-            plugin.debug("UpdateTimes items found: " + resultSet.getFetchSize());
-
-            while(resultSet.next()){
-
-                Long timeExisted = resultSet.getLong("time_of_creation");
-                String orderid = resultSet.getString("order_id");
-
-                if(plugin.isTimeout() && plugin.getOrderTimeout() <= timeExisted + (TimeInterval * 60000)){
-                    continue;
-                }
-
-                try(PreparedStatement preparedStatement = connection.prepareStatement(
-                        " INSERT INTO order_items (Time_Existed) WHERE order_id = id VALUES ( ?, ?) "
-                )){
-                    preparedStatement.setLong(0, (TimeInterval * 60000));
-                    preparedStatement.setString(1 ,  orderid);
-                    plugin.getLogger().info("Time added to itemorder: " + orderid + "'s time_of_creation");
-                }
-                catch(SQLException e){
-                    e.printStackTrace();
-                    plugin.getLogger().info("Failure inserting into time_of_creation in SQL-Databse.");
-                }
-            }
-        }
-
     }
 
     public ItemOrder getOrderById(String orderID) {

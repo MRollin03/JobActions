@@ -21,10 +21,11 @@ public class CancelOrderGUIListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        int slot = event.getSlot();
-        Player player = (Player) event.getWhoClicked();
-        System.out.println("slot " + slot + " clicked on " + player.getName());
+
         if (event.getView().getTitle().equals(ChatColor.RED + "Cancel Orders")) {
+            Player player = (Player) event.getWhoClicked();
+            int slot = event.getSlot();
+
             event.setCancelled(true); // Cancel event by default
             System.out.println("Cancelled");
 
@@ -76,6 +77,9 @@ public class CancelOrderGUIListener implements Listener {
 
         if(event.getView().getTitle().equals(ChatColor.AQUA + "Cancel Order?")){
             JobActions plugin = JobActions.getInstance();
+
+            Player player = (Player) event.getWhoClicked();
+            int slot = event.getSlot();
 
             switch (slot) {
                 case 0:

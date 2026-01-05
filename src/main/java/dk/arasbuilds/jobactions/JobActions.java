@@ -142,7 +142,7 @@ public class JobActions extends JavaPlugin implements Listener {
         return config.getBoolean("debug");
     }
 
-    public boolean isTimeout(){ return config.getBoolean("order-timeout-activated");}
+    public boolean isTimeout(){ return config.getBoolean("Order.order-timeout-activated");}
 
     public int getOrderTimeout() {
         return config.getInt("Order.order-timeout");

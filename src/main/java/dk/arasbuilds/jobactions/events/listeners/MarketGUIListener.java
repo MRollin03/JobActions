@@ -45,13 +45,13 @@ public class MarketGUIListener implements Listener {
 
                 default:
 
-
                     ItemStack clickedItem = event.getCurrentItem();
                     if (clickedItem == null || !clickedItem.hasItemMeta()) {
                         return; // Cancelled event if item is null or has no meta
                     }
 
                     ItemMeta itemMeta = clickedItem.getItemMeta();
+                    assert itemMeta != null;
                     if (!itemMeta.hasLore()) {
                         return; // Cancelled event if item has no lore
                     }
@@ -63,7 +63,7 @@ public class MarketGUIListener implements Listener {
                     }
                     String id = lore.get(2);
                     ItemOrder order = JobActions.getInstance().getJobActionsDatabase().getOrderById(id);
-                    OrderAccepterGUI.DisplayGUI(order, player);
+                    OrderAccepterGUI.DisplayAcceptGUI(order, player);
 
                     break;
             }

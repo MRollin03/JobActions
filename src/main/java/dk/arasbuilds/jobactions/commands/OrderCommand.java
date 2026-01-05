@@ -3,6 +3,7 @@ package dk.arasbuilds.jobactions.commands;
 import dk.arasbuilds.jobactions.JobActions;
 import dk.arasbuilds.jobactions.PluginItems.ItemOrder;
 import dk.arasbuilds.jobactions.database.JobActionsDatabase;
+import dk.arasbuilds.jobactions.events.gui.CancelOrderGUI;
 import dk.arasbuilds.jobactions.events.gui.CompletedOrderVaultGUI;
 import dk.arasbuilds.jobactions.events.gui.MarketGUI;
 import org.bukkit.ChatColor;
@@ -35,7 +36,8 @@ public class OrderCommand implements CommandExecutor {
             }
 
             case "cancel": {
-                if(args.length != 2) {JobActions.getInstance().help(player); return true;}
+                if(args.length > 2) {JobActions.getInstance().help(player); return true;}
+                if(args.length == 1) { CancelOrderGUI.Display(player); JobActions.getInstance().debug("AAAAAAAAAAAAAAAAAa"); return true; }
 
                 String orderId = args[1];
                 JobActionsDatabase db = JobActions.getInstance().getJobActionsDatabase();

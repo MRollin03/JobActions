@@ -5,6 +5,7 @@ import dk.arasbuilds.jobactions.Utils.VaultHook;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class GUIUtils {
+public class GUIUtils implements Listener {
 
     static ItemStack CreateOrderPreviewStack(ItemOrder order) {
         // Create and set order item

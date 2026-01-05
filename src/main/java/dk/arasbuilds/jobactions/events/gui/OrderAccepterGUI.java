@@ -19,8 +19,24 @@ public class OrderAccepterGUI extends GUIUtils{
      * Main function for stating Gui for the accept window
      * @param player for the player opening the vault
      */
-    public static void DisplayGUI(ItemOrder order, Player player) {
+    public static void DisplayAcceptGUI(ItemOrder order, Player player) {
         Inventory inv = Bukkit.createInventory(player, 9, ChatColor.AQUA + " Order Accepter ");
+
+        // ORDER PREVIEW STACK
+        ItemStack orderPreview = CreateOrderPreviewStack(order);
+        inv.setItem(4, orderPreview);
+
+        // ORDER ACCEPT STACK/BUTTON
+        inv.setItem(0, CreateAcceeptStack());
+
+        // ORDER CANCEL STACK/BUTTON
+        inv.setItem(8, CreateCancelStack());
+
+        player.openInventory(inv);
+    }
+
+    public static void DisplayCancelAcceptGUI(ItemOrder order, Player player) {
+        Inventory inv = Bukkit.createInventory(player, 9, ChatColor.AQUA + "Cancel Order?");
 
         // ORDER PREVIEW STACK
         ItemStack orderPreview = CreateOrderPreviewStack(order);

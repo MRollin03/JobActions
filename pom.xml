@@ -11,6 +11,7 @@
 
     <name>JobActions</name>
 
+
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,7 +52,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>M:/.Minecraft_server/plugins</outputDirectory>
+                            <outputDirectory>$MC_TESTSERVER_PLUGINS</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.build.directory}</directory>

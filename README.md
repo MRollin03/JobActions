@@ -1,16 +1,17 @@
-<img src="https://github.com/MRollin03/JobActions/blob/master/Git%20banner.png">
+![](https://github.com/MRollin03/JobActions/blob/master/Git%20banner.png)
 
-
-# JobActions 
+# JobActions
 
 > [!IMPORTANT]
 > This Project is WIP and probably has a bunch of bugs.
 > Further testing needed, gladly open issues
 
 ## Description
+
 JobActions is a Minecraft plugin that enables players to create, list, and fulfil orders for items using an in-game currency. The plugin provides commands for creating and managing orders through a graphical user interface (GUI).
 
 ## Dependencies
+
 This Plugin is dependent on a few other plugins. [Vault](https://www.spigotmc.org/resources/vault.34315/)
 And some kind of economy plugin for vault
 Econ: [XConomy](https://github.com/YiC200333/XConomy) [iConomy](https://www.spigotmc.org/resources/iconomy-reloaded.11170/) for more options see Vault.
@@ -19,7 +20,7 @@ Econ: [XConomy](https://github.com/YiC200333/XConomy) [iConomy](https://www.spig
 
 - **Create Orders:** Players can create orders for specific items or items they are currently holding.
 - **Order Market**:  Chest GUI with available orders.
-- 
+-
 - **List Orders:** Players can list all orders, filter orders by user or item, and manage orders through a GUI.
 - **Receive Orders:** Players can receive their fulfilled orders through a GUI.
 - **Permissions:** Fine-grained permissions control who can create, list, cancel, and receive orders.
@@ -37,17 +38,19 @@ Creates an order for a specified item or the item in hand.
 - **Price:** The price in MetaCoins.
 
 **Examples:**
+
 - `/order create oak_planks 128 100` - Orders 128 oak planks for 100 MetaCoins.
 - `/order create hand 64 1000` - Orders 64 of the item in hand for 1000 MetaCoins.
 
 ### `/market`
+
 Opens market/Chest GUI where all current ordes are listed.
-Itemstack are interactable and order-infomation is 
+Itemstack are interactable and order-infomation is
 stored in the Metadate/lore of the itemstack itself.
 
+### `/order list [user|item]`
 
-### `/order list [user|item]` 
->[!NOTE]
+> [!NOTE]
 > Function is not yet implemented
 
 Lists orders, optionally filtered by user or item. Opens a GUI for managing orders.
@@ -83,3 +86,4 @@ Installation
 - Download the latest release of the plugin.
 - Insert into the plugins folder of you server
 - Start the Spigot server as normal.
+```

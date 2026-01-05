@@ -13,16 +13,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
-public class CancelOrderGUI  extends GUIUtils{
+public class CancelOrderGUI  extends GUIUtils
+{
 
     private static final int INVENTORY_ROWS = 4;
     private static final int INVENTORY_SIZE = INVENTORY_ROWS * 9;
-    private static final String GUI_TITLE = ChatColor.RED + "Completed Orders Vault";
+    private static final String GUI_TITLE = ChatColor.RED + "Cancel Orders";
     private static final Map<UUID, Queue<ItemStack>> playerItemsQueue = new HashMap<>();
 
     /**
      * Main function for stating Gui for the Market
-     * @param player for the player opening the market
+     * @param player for the player opening the Closing GUI
      */
     public static void Display(Player player){
         JobActions plugin = JobActions.getInstance();
@@ -30,7 +31,7 @@ public class CancelOrderGUI  extends GUIUtils{
         player.closeInventory();
 
         //Create Inventory GUI
-        Inventory inv = Bukkit.createInventory( player,9 * 6, ChatColor.RED + "Cancel Orders");
+        Inventory inv = Bukkit.createInventory( player,INVENTORY_SIZE, GUI_TITLE);
         ArrayList<ItemOrder> jobs = JobActions.getInstance().getJobActionsDatabase().getOrdersByPlayer(player.getUniqueId());
 
         if(jobs.size() > 0){

@@ -2,21 +2,14 @@ package dk.arasbuilds.jobactions.database;
 
 import dk.arasbuilds.jobactions.JobActions;
 import dk.arasbuilds.jobactions.PluginItems.ItemOrder;
-import dk.arasbuilds.jobactions.Utils.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.*;
-import java.time.Clock;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,13 +42,14 @@ public class JobActionsDatabase {
             """);
             statement.execute("""
                 CREATE TABLE IF NOT EXISTS item_orders (
-                    order_id TEXT PRIMARY KEY,
-                    player_uuid TEXT NOT NULL,
-                    material TEXT NOT NULL,
-                    amount INTEGER NOT NULL,
-                    price INTEGER NOT NULL,
-                    FOREIGN KEY(player_uuid) REFERENCES players(player_uuid)
-                )
+                     order_id TEXT PRIMARY KEY,
+                     player_uuid TEXT NOT NULL,
+                     material TEXT NOT NULL,
+                     amount INTEGER NOT NULL,
+                     price INTEGER NOT NULL,
+                     time_of_creation INTEGER NOT NULL,
+                     FOREIGN KEY(player_uuid) REFERENCES players(player_uuid)
+                 )
             """);
         }
     }
@@ -83,7 +77,7 @@ public class JobActionsDatabase {
     //< ORDER RELATED METHODS
     public void addPlayer(Player player) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO players (uuid, username) VALUES (?, ?)"
+                "INSERT INTO players (player_uuid, player_name) VALUES (?, ?)"
         )) {
             preparedStatement.setString(1, player.getUniqueId().toString());
             preparedStatement.setString(2, player.getName());
@@ -94,11 +88,11 @@ public class JobActionsDatabase {
     }
 
     public boolean playerExists(UUID uuid) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT * FROM players WHERE uuid = ?"
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT 1 FROM players WHERE player_uuid = ?"
         )) {
-            preparedStatement.setString(1, uuid.toString());
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ps.setString(1, uuid.toString());
+            ResultSet resultSet = ps.executeQuery();
             return resultSet.next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -114,16 +108,18 @@ public class JobActionsDatabase {
                 updateOrder(order);
             } else {
                 // Insert new order
-                try (PreparedStatement preparedStatement = connection.prepareStatement(
-                        "INSERT INTO item_orders (order_id, player_uuid, material, amount, price) VALUES (?, ?, ?, ?, ?)"
+                try (PreparedStatement ps = connection.prepareStatement(
+                        "INSERT INTO item_orders (order_id, player_uuid, material, amount, price, time_of_creation) VALUES (?, ?, ?, ?, ?, ?)"
                 )) {
-                    preparedStatement.setString(1, order.getOrderID());
-                    preparedStatement.setString(2, order.getUuid().toString());
-                    preparedStatement.setString(3, order.getMaterial().toString());
-                    preparedStatement.setInt(4, order.getAmount());
-                    preparedStatement.setInt(5, order.getPrice());
-                    preparedStatement.executeUpdate();
+                    ps.setString(1, order.getOrderID());
+                    ps.setString(2, order.getUuid().toString());
+                    ps.setString(3, order.getMaterial().name());
+                    ps.setInt(4, order.getAmount());
+                    ps.setInt(5, order.getPrice());
+                    ps.setLong(6, System.currentTimeMillis());
+                    ps.executeUpdate();
                 }
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -131,11 +127,11 @@ public class JobActionsDatabase {
     }
 
     private boolean orderExists(String orderID) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
+        try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT 1 FROM item_orders WHERE order_id = ?"
         )) {
-            preparedStatement.setString(1, orderID);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ps.setString(1, orderID);
+            ResultSet resultSet = ps.executeQuery();
             return resultSet.next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,15 +140,15 @@ public class JobActionsDatabase {
     }
 
     private void updateOrder(ItemOrder order) { //TODO (MAYBE) ORDER UPDATE
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
+        try (PreparedStatement ps = connection.prepareStatement(
                 "UPDATE item_orders SET player_uuid = ?, material = ?, amount = ?, price = ? WHERE order_id = ?"
         )) {
-            preparedStatement.setString(1, order.getUuid().toString());
-            preparedStatement.setString(2, order.getMaterial().toString());
-            preparedStatement.setInt(3, order.getAmount());
-            preparedStatement.setInt(4, order.getPrice());
-            preparedStatement.setString(5, order.getOrderID());
-            preparedStatement.executeUpdate();
+            ps.setString(1, order.getUuid().toString());
+            ps.setString(2, order.getMaterial().toString());
+            ps.setInt(3, order.getAmount());
+            ps.setInt(4, order.getPrice());
+            ps.setString(5, order.getOrderID());
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -191,22 +187,23 @@ public class JobActionsDatabase {
         ResultSet resultSet = null;
         if(plugin.isTimeout()){
             try(PreparedStatement preparedStatement = connection.prepareStatement(
-                    " SELECT order_id,Time_Existed  FROM order_items WHERE Time_Existed >= ? "
+                    " SELECT order_id,time_of_creation  FROM order_items WHERE time_of_creation "
             )){
-                preparedStatement.setInt(0, value);
                 preparedStatement.execute();
                 resultSet = preparedStatement.getResultSet();
             }
             catch(SQLException e){
                 e.printStackTrace();
-                plugin.getLogger().info("Failure getting Time_Existed in SQL-Database.");
+                plugin.getLogger().info("Failure getting time_of_creation in SQL-Database.");
             }
 
             if(resultSet != null){return;}
 
+            plugin.debug("UpdateTimes items found: " + resultSet.getFetchSize());
+
             while(resultSet.next()){
 
-                Long timeExisted = resultSet.getLong("Time_Exsisted");
+                Long timeExisted = resultSet.getLong("time_of_creation");
                 String orderid = resultSet.getString("order_id");
 
                 if(plugin.isTimeout() && plugin.getOrderTimeout() <= timeExisted + (TimeInterval * 60000)){
@@ -218,11 +215,11 @@ public class JobActionsDatabase {
                 )){
                     preparedStatement.setLong(0, (TimeInterval * 60000));
                     preparedStatement.setString(1 ,  orderid);
-                    plugin.getLogger().info("Time added to itemorder: " + orderid + "'s Time_Existed");
+                    plugin.getLogger().info("Time added to itemorder: " + orderid + "'s time_of_creation");
                 }
                 catch(SQLException e){
                     e.printStackTrace();
-                    plugin.getLogger().info("Failure inserting into Time_Existed in SQL-Databse.");
+                    plugin.getLogger().info("Failure inserting into time_of_creation in SQL-Databse.");
                 }
             }
         }

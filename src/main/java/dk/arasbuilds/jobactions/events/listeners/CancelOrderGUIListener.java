@@ -9,24 +9,44 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public class CancelOrderGUIListener {
+public class CancelOrderGUIListener implements Listener {
 
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
+        int slot = event.getSlot();
+        Player player = (Player) event.getWhoClicked();
+        System.out.println("slot " + slot + " clicked on " + player.getName());
         if (event.getView().getTitle().equals(ChatColor.RED + "Cancel Orders")) {
             event.setCancelled(true); // Cancel event by default
-
-            int slot = event.getSlot();
-            Player player = (Player) event.getWhoClicked();
+            System.out.println("Cancelled");
 
             switch (slot) {
+
+                case 9 * 6 - 6:
+                    // Implement or call the previous page logic here
+                    player.sendMessage(ChatColor.YELLOW + "Previous page functionality not yet implemented.");
+                    //TODO: ADD Vault scroll (previous)
+                    event.setCancelled(true); // Cancel event by default
+                    break;
+
+                case 9 * 6 - 5:
+                    player.closeInventory();
+                    break;
+
+                case 9 * 6 - 4:
+                    // Implement or call the next page logic here
+                    player.sendMessage(ChatColor.YELLOW + "Next page functionality not yet implemented.");
+                    //TODO: ADD Vault scroll (Next)
+                    event.setCancelled(true); // Cancel event by default
+                    break;
 
                 default:
 
@@ -36,6 +56,7 @@ public class CancelOrderGUIListener {
                     }
 
                     ItemMeta itemMeta = clickedItem.getItemMeta();
+                    assert itemMeta != null;
                     if (!itemMeta.hasLore()) {
                         return; // Cancelled event if item has no lore
                     }
@@ -47,16 +68,14 @@ public class CancelOrderGUIListener {
                     }
                     String id = lore.get(2);
                     ItemOrder order = JobActions.getInstance().getJobActionsDatabase().getOrderById(id);
-                    OrderAccepterGUI.DisplayGUI(order, player);
+                    OrderAccepterGUI.DisplayCancelAcceptGUI(order, player);
 
                     break;
             }
         }
 
-        if(event.getView().getTitle().equals(ChatColor.AQUA + "Order Cancel Accepter")){
+        if(event.getView().getTitle().equals(ChatColor.AQUA + "Cancel Order?")){
             JobActions plugin = JobActions.getInstance();
-            Player player = (Player) event.getWhoClicked();
-            int slot = event.getSlot();
 
             switch (slot) {
                 case 0:
@@ -138,7 +157,7 @@ public class CancelOrderGUIListener {
                     event.getWhoClicked().closeInventory();
 
             }
-
+            plugin.debug("NoMatch");
             event.setCancelled(true); // Cancel the event to prevent item moving
         }
     }

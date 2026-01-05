@@ -4,7 +4,9 @@ import dk.arasbuilds.jobactions.PluginItems.PlayerOrders;
 import dk.arasbuilds.jobactions.commands.OrderCommand;
 import dk.arasbuilds.jobactions.commands.OrderTabCompleter;
 import dk.arasbuilds.jobactions.database.JobActionsDatabase;
+import dk.arasbuilds.jobactions.events.gui.CancelOrderGUI;
 import dk.arasbuilds.jobactions.events.gui.CompletedOrderVaultGUI;
+import dk.arasbuilds.jobactions.events.listeners.CancelOrderGUIListener;
 import dk.arasbuilds.jobactions.events.listeners.CompletedOrderVaultGUIListener;
 import dk.arasbuilds.jobactions.events.listeners.MarketGUIListener;
 import dk.arasbuilds.jobactions.events.listeners.OrderGUIListener;
@@ -26,6 +28,7 @@ public class JobActions extends JavaPlugin implements Listener {
     private FileConfiguration config;
     private PlayerOrders playerOrders;
     private JobActionsDatabase jobActionsDatabase;
+
 
     @Override
     public void onEnable() {
@@ -62,14 +65,13 @@ public class JobActions extends JavaPlugin implements Listener {
         pm.registerEvents(new OrderGUIListener(), this);
         pm.registerEvents(new CompletedOrderVaultGUI(), this);
         pm.registerEvents(new CompletedOrderVaultGUIListener(), this);
+        pm.registerEvents(new CancelOrderGUIListener(), this);
 
         // Register this class as listener (if it has event handlers)
         pm.registerEvents(this, this);
 
         jobActionsDatabase.startOrderTimeoutChecker();
     }
-
-
 
     public void loadConfig(){
         saveDefaultConfig(); // ensures config.yml exists
@@ -185,10 +187,10 @@ public class JobActions extends JavaPlugin implements Listener {
         this.getLogger().info(ColoredAsciiArt.YELLOW + " __  / / __ \\/ __ \\                  " + ColoredAsciiArt.RESET);
         this.getLogger().info(ColoredAsciiArt.YELLOW + "/ /_/ / /_/ / /_/ /                  " + ColoredAsciiArt.RESET);
         this.getLogger().info(ColoredAsciiArt.YELLOW + "\\____/\\____/_.___/ _                 " + ColoredAsciiArt.RESET);
-        this.getLogger().info(ColoredAsciiArt.RED + "   /   | _____/ /_(_)___  ____  _____" + ColoredAsciiArt.RESET);
-        this.getLogger().info(ColoredAsciiArt.RED + "  / /| |/ ___/ __/ / __ \\/ __ \\/ ___/" + ColoredAsciiArt.RESET);
-        this.getLogger().info(ColoredAsciiArt.RED + " / ___ / /__/ /_/ / /_/ / / / (__  ) " + ColoredAsciiArt.RESET);
-        this.getLogger().info(ColoredAsciiArt.RED + "/_/  |_\\___/\\__/_/\\____/_/ /_/____/  " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.BLUE + "   /   | _____/ /_(_)___  ____  _____" + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.BLUE + "  / /| |/ ___/ __/ / __ \\/ __ \\/ ___/" + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.BLUE + " / ___ / /__/ /_/ / /_/ / / / (__  ) " + ColoredAsciiArt.RESET);
+        this.getLogger().info(ColoredAsciiArt.BLUE + "/_/  |_\\___/\\__/_/\\____/_/ /_/____/  " + ColoredAsciiArt.RESET);
         this.getLogger().info(ColoredAsciiArt.DARK_GRAY + "By Aras | " + ColoredAsciiArt.RESET + ColoredAsciiArt.DARK_GREEN + "v." + this.getDescription().getVersion() + ColoredAsciiArt.RESET );
     }
 

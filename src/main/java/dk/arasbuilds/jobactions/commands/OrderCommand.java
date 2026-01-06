@@ -92,66 +92,117 @@ public class OrderCommand implements CommandExecutor {
                     JobActions.getInstance().help(player);
                     return true;
                 }
-                int quantity = Integer.parseInt(args[2]);
-                int price = Integer.parseInt(args[3]);
-                JobActions plugin = JobActions.getInstance();
 
-                if(price < 0){
-                    player.sendMessage(ChatColor.RED + "Payment can't be negative.");
-                }
-
-                //Price and order amount can't be zero or negative
-                if(plugin.isOrderBaseFeeActivated() && !plugin.isOrderFeePercentageActivated()){
-                    if (price < plugin.getOrderBaseFee() && price < 1) {
-                        commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the fee = " + Math.ceil(plugin.getOrderBaseFee()));
-                        return true;
-                    }
-                }
-
-                if(plugin.isOrderFeePercentageActivated() && plugin.isOrderBaseFeeActivated()){
-                    if (price < Math.ceil(plugin.getOrderBaseFee() + (price * (0.01 * plugin.getOrderFeePercentage()) ) ) && price < 1) {
-                        commandSender.sendMessage(ChatColor.RED + "Please enter price larger than the fee = " + Math.ceil(plugin.getOrderBaseFee() + (price * (0.01 * plugin.getOrderFeePercentage()) ) ) );
-                        return true;
-                    }
-                }
-
-
-
-                //Limit the amount of orders pl player
-                int currentOrderAmount = plugin.getJobActionsDatabase().getOrdersByPlayer(player.getUniqueId()).size();
-                if (currentOrderAmount > plugin.getOrderLimit()) {
-                    commandSender.sendMessage(ChatColor.RED + "Order limit exceeded");
+                // Parse and validate quantity
+                int quantity;
+                try {
+                    quantity = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage(ChatColor.RED + "Invalid quantity. Please enter a number.");
                     return true;
                 }
 
-                //Get item from hand or requested
+                if (quantity <= 0) {
+                    player.sendMessage(ChatColor.RED + "Quantity must be greater than 0.");
+                    return true;
+                }
+
+                int price;
+                try {
+                    price = Integer.parseInt(args[3]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage(ChatColor.RED + "Invalid price. Please enter a number.");
+                    return true;
+                }
+
+                if (price <= 0) {
+                    player.sendMessage(ChatColor.RED + "Price must be greater than 0.");
+                    return true;
+                }
+
+                JobActions plugin = JobActions.getInstance();
+
+                // Calculate the fee that will be applied
+                double totalFee = 0;
+
+                if (plugin.isOrderFeePercentageActivated()) {
+                    totalFee += price * (plugin.getOrderFeePercentage() / 100.0);
+                }
+
+                if (plugin.isOrderBaseFeeActivated()) {
+                    totalFee += plugin.getOrderBaseFee();
+                }
+
+                // Calculate what the final price would be
+                double finalPrice = price - totalFee;
+
+                // Check if price covers the fees
+                if (finalPrice <= 0) {
+                    int minimumPrice = (int) Math.ceil(totalFee) + 1; // Add 1 to ensure positive final price
+                    player.sendMessage(ChatColor.RED + "Price too low! Minimum price with current fees: " + minimumPrice);
+                    player.sendMessage(ChatColor.YELLOW + "Fee breakdown:");
+                    if (plugin.isOrderFeePercentageActivated()) {
+                        player.sendMessage(ChatColor.YELLOW + "  - Percentage fee (" + plugin.getOrderFeePercentage() + "%): " +
+                                (int)(price * (plugin.getOrderFeePercentage() / 100.0)));
+                    }
+                    if (plugin.isOrderBaseFeeActivated()) {
+                        player.sendMessage(ChatColor.YELLOW + "  - Base fee: " + plugin.getOrderBaseFee());
+                    }
+                    return true;
+                }
+
+                // Limit the amount of orders per player
+                int currentOrderAmount = plugin.getJobActionsDatabase().getOrdersByPlayer(player.getUniqueId()).size();
+                if (currentOrderAmount >= plugin.getOrderLimit()) {
+                    player.sendMessage(ChatColor.RED + "Order limit exceeded (" + currentOrderAmount + "/" + plugin.getOrderLimit() + ")");
+                    return true;
+                }
+
+                // Get item from hand or requested
                 Material material = null;
                 if (args[1].equalsIgnoreCase("hand")) {
                     material = player.getInventory().getItemInMainHand().getType();
+                    if (material == Material.AIR) {
+                        player.sendMessage(ChatColor.RED + "You must hold an item in your hand!");
+                        return true;
+                    }
                 } else {
                     try {
                         material = Material.valueOf(args[1].toUpperCase());
                     } catch (IllegalArgumentException e) {
-                        player.sendMessage("Invalid material");
+                        player.sendMessage(ChatColor.RED + "Invalid material: " + args[1]);
                         return true;
                     }
                 }
 
-                //Check if item request is above OrderLimitStacks
-                if (material.getMaxStackSize() * plugin.getOrderLimitStackCount() < quantity) {
-                    player.sendMessage("Combined order limit exceeded (max stack size is " + plugin.getOrderLimitStackCount() + ")");
+                // Check if item request is above OrderLimitStacks
+                int maxAllowedQuantity = material.getMaxStackSize() * plugin.getOrderLimitStackCount();
+                if (quantity > maxAllowedQuantity) {
+                    player.sendMessage(ChatColor.RED + "Quantity too high! Maximum allowed: " + maxAllowedQuantity +
+                            " (" + plugin.getOrderLimitStackCount() + " stacks of " + material.getMaxStackSize() + ")");
                     return true;
                 }
 
-                //Create ItemOrder
+                // Create ItemOrder
                 ItemOrder order = new ItemOrder(player, material, quantity, price);
                 if (order.getOrderID() == null) {
-                    player.sendMessage("Insufficient funds!");
+                    player.sendMessage(ChatColor.RED + "Insufficient funds!");
                     return true;
                 }
 
                 plugin.getJobActionsDatabase().addOrder(order);
-                player.sendMessage(ChatColor.GREEN + "Order created!");
+
+                // Success message with details
+                player.sendMessage(ChatColor.GREEN + "Order created successfully!");
+                player.sendMessage(ChatColor.GRAY + "Material: " + ChatColor.WHITE + material.name());
+                player.sendMessage(ChatColor.GRAY + "Quantity: " + ChatColor.WHITE + quantity);
+                player.sendMessage(ChatColor.GRAY + "Price offered: " + ChatColor.WHITE + price);
+                if (totalFee > 0) {
+                    player.sendMessage(ChatColor.GRAY + "Fee paid: " + ChatColor.WHITE + (int)totalFee);
+                    player.sendMessage(ChatColor.GRAY + "Final price: " + ChatColor.WHITE + (int)finalPrice);
+                }
+
+                return true;
             }
 
             case "market": {

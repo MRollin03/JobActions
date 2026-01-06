@@ -6,7 +6,7 @@
 
     <groupId>dk.arasbuilds</groupId>
     <artifactId>JobActions</artifactId>
-    <version>0.9.37-BETA</version>
+    <version>0.9.41-BETA</version>
     <packaging>jar</packaging>
 
     <name>JobActions</name>

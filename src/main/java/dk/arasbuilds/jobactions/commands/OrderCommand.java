@@ -161,6 +161,7 @@ public class OrderCommand implements CommandExecutor {
                 // Get item from hand or requested
                 Material material = null;
                 if (args[1].equalsIgnoreCase("hand")) {
+                    if(player.getInventory().getItemInMainHand().hasItemMeta()){player.sendMessage(ChatColor.RED + "Cannot make order of Items with metadata"); return true;}
                     material = player.getInventory().getItemInMainHand().getType();
                     if (material == Material.AIR) {
                         player.sendMessage(ChatColor.RED + "You must hold an item in your hand!");

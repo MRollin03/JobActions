@@ -191,7 +191,7 @@ public class JobActions extends JavaPlugin implements Listener {
         this.getLogger().info(ColoredAsciiArt.BLUE + "  / /| |/ ___/ __/ / __ \\/ __ \\/ ___/" + ColoredAsciiArt.RESET);
         this.getLogger().info(ColoredAsciiArt.BLUE + " / ___ / /__/ /_/ / /_/ / / / (__  ) " + ColoredAsciiArt.RESET);
         this.getLogger().info(ColoredAsciiArt.BLUE + "/_/  |_\\___/\\__/_/\\____/_/ /_/____/  " + ColoredAsciiArt.RESET);
-        this.getLogger().info(ColoredAsciiArt.DARK_GRAY + "By Aras | " + ColoredAsciiArt.RESET + ColoredAsciiArt.DARK_GREEN + "v." + this.getDescription().getVersion() + ColoredAsciiArt.RESET );
+        this.getLogger().info(ColoredAsciiArt.DARK_GRAY + "By Aras | " + ColoredAsciiArt.RESET + ColoredAsciiArt.DARK_GREEN + "v" + this.getDescription().getVersion() + ColoredAsciiArt.RESET );
     }
 
     public class ColoredAsciiArt {
